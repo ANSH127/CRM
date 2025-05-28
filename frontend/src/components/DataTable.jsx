@@ -75,7 +75,7 @@ export default function DataTable({ columns, rows: initialRows }) {
         rows={rows}
         columns={columns}
         initialState={{ pagination: { paginationModel } }}
-        pageSizeOptions={[5, 10]}
+        pageSizeOptions={[5, 10,50]}
         checkboxSelection
         onRowSelectionModelChange={(newSelection) => {
           setSelectionModel(newSelection.ids);

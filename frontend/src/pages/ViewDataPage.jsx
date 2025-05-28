@@ -53,8 +53,8 @@ export default function ViewDataPage() {
       return;
     }
     // file size limit check
-    if (file.size > 1 * 1024 * 1024) { 
-      alert("File size exceeds 5 MB limit. Please upload a smaller file.");
+    if (file.size > 100 * 1024) {
+      alert("File size exceeds 100 KB limit. Please upload a smaller file.");
       return;
     }
 

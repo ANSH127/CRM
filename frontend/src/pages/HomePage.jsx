@@ -1,12 +1,42 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
-    let metrics = [
-    { label: "Total Customers", value: 1284, color: "bg-blue-100", text: "text-blue-700" },
-    { label: "Total Campaigns", value: 14, color: "bg-green-100", text: "text-green-700" },
-    { label: "Last Campaign Delivery Rate", value: "91.2%", color: "bg-yellow-100", text: "text-yellow-700" },
-    { label: "Audience Matched in Last Campaign", value: "300 users", color: "bg-purple-100", text: "text-purple-700" },
+  let metrics = [
+    {
+      label: "Total Customers",
+      value: 1284,
+      color: "bg-blue-100",
+      text: "text-blue-700",
+    },
+    {
+      label: "Total Campaigns",
+      value: 14,
+      color: "bg-green-100",
+      text: "text-green-700",
+    },
+    {
+      label: "Last Campaign Delivery Rate",
+      value: "91.2%",
+      color: "bg-yellow-100",
+      text: "text-yellow-700",
+    },
+    {
+      label: "Audience Matched in Last Campaign",
+      value: "300 users",
+      color: "bg-purple-100",
+      text: "text-purple-700",
+    },
   ];
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (!user) {
+      navigate("/login");
+    }
+  }, []);
+
   return (
     <div>
       <div className="flex justify-center items-center mt-10">
@@ -31,7 +61,7 @@ export default function HomePage() {
             📥 Upload Customers
           </button>
         </div>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 my-10 max-w-4xl mx-auto">
           {metrics.map((metric) => (
             <div
@@ -41,12 +71,12 @@ export default function HomePage() {
               <div className={`text-3xl font-bold mb-2 ${metric.text}`}>
                 {metric.value}
               </div>
-              <div className="text-gray-600 font-medium text-center">{metric.label}</div>
+              <div className="text-gray-600 font-medium text-center">
+                {metric.label}
+              </div>
             </div>
           ))}
         </div>
-
-
       </div>
     </div>
   );

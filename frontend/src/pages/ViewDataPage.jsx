@@ -125,7 +125,7 @@ export default function ViewDataPage() {
               type="file"
               id="fileInput"
               className="hidden"
-              accept=".csv, .xlsx, .xls"
+              accept=".xlsx, .xls"
               onChange={(e) => {
                 const selectedFile = e.target.files[0];
                 if (selectedFile) {

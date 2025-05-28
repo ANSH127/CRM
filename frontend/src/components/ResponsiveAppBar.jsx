@@ -24,6 +24,12 @@ const pages = [
     label: '📈 Campaign History',
     path: '/campaign-history',
   },
+  {
+    label:'Logout',
+    path:'/login',
+    enable:localStorage.getItem('user') ? true : false
+
+  }
 ];
 
 function ResponsiveAppBar() {
@@ -86,6 +92,19 @@ function ResponsiveAppBar() {
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
               {pages.map((page) => (
+
+                page.label === 'Logout' ? (
+                <MenuItem key={page.label} onClick={() => {
+                  localStorage.removeItem('user');
+                  window.location.href = '/login';
+                }}
+                hidden={page.enable ? false : true}
+                >
+                  <Typography textAlign="center" sx={{ color: 'black' }}>{page.label}</Typography>
+                </MenuItem>
+              ) : 
+
+
                 <MenuItem key={page.label} onClick={handleCloseNavMenu}>
                   <Link to={page.path} sx={{ textAlign: 'center' ,color:'black'}}>{page.label}</Link>
                 </MenuItem>
@@ -111,6 +130,31 @@ function ResponsiveAppBar() {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
+              page.label === 'Logout' ? (
+                <button
+                  key={page.label}
+                  onClick={
+                    () => {
+                      localStorage.removeItem('user');
+                      window.location.href = '/login';
+                    }
+                  }
+                  style={{
+                    color: 'black',
+                    display: 'block',
+                    fontWeight: 'bold',
+                    margin: '0 5px',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                  hidden={page.enable ? false : true}
+                >
+                  {page.label}
+                </button>
+              ):
+        
+
               <Link
                 to={page.path}
                 key={page.label}

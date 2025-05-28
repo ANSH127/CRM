@@ -57,7 +57,11 @@ export default function HomePage() {
           <button className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg shadow transition">
             ➕ Create New Campaign
           </button>
-          <button className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg shadow transition">
+          <button className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg shadow transition cursor-pointer"
+          onClick={
+            () => navigate("/view-data")
+          }>
+          
             📥 Upload Customers
           </button>
         </div>

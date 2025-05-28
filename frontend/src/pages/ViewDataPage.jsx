@@ -95,43 +95,61 @@ export default function ViewDataPage() {
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4 text-center">Add/View Data</h2>
-      <div className="flex justify-start mb-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
         <button
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          className="bg-blue-500 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-600 transition"
           onClick={() => setOpen(true)}
         >
           Add Data
         </button>
-        <div>
-          <input
-            type="file"
-            id="fileInput"
-            className="ml-4
-          border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            accept=".csv, .xlsx, .xls"
-            placeholder="Upload File"
-            onChange={(e) => {
-              const selectedFile = e.target.files[0];
-              if (selectedFile) {
-                setFile(selectedFile);
-              }
-            }}
-          />
+        <div className="flex items-center gap-2">
+          <label
+            htmlFor="fileInput"
+            className="flex items-center cursor-pointer bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-200 transition"
+          >
+            <svg
+              className="w-5 h-5 mr-2 text-blue-500"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12"
+              />
+            </svg>
+            <span className="font-medium text-gray-700">Choose File</span>
+            <input
+              type="file"
+              id="fileInput"
+              className="hidden"
+              accept=".csv, .xlsx, .xls"
+              onChange={(e) => {
+                const selectedFile = e.target.files[0];
+                if (selectedFile) {
+                  setFile(selectedFile);
+                }
+              }}
+            />
+          </label>
+          <span className="ml-2 text-sm text-gray-600">
+            {file ? file.name : "No file chosen"}
+          </span>
           <button
-            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2"
+            className="bg-green-500 text-white px-5 py-2 rounded-lg shadow hover:bg-green-600 transition ml-2"
             onClick={handleFileUpload}
           >
-            Upload File
+            Upload
           </button>
         </div>
-
         <BasicModal
           open={open}
           onClose={() => setOpen(false)}
           fetchData={fetchData}
         />
       </div>
-
       <DataTable columns={columns} rows={rows} />
     </div>
   );

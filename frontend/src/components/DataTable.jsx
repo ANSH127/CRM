@@ -2,17 +2,46 @@ import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
+import axios from "axios";
 
 export default function DataTable({ columns, rows: initialRows }) {
   const [rows, setRows] = React.useState(initialRows);
   const [selectionModel, setSelectionModel] = React.useState([]);
   const paginationModel = { page: 0, pageSize: 5 };
 
-  const handleDelete = () => {
-    if (selectionModel.length === 0) return;
-    for (const id of selectionModel) {
-      setRows((prevRows) => prevRows.filter((row) => row.id !== id));
+  const handleDelete = async () => {
+    // console.log("Selected rows for deletion:", selectionModel);
+
+    const ids = [...selectionModel];
+    
+    if (ids.length === 0) return;
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/customer/delete_multiple",
+        { ids: ids },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${
+              JSON.parse(localStorage.getItem("user")).token
+            }`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("Rows deleted successfully:", response.data);
+        alert("Selected rows deleted successfully!");
+        window.location.reload(); 
+      } else {
+        console.error("Failed to delete rows:", response.statusText);
+        alert("Failed to delete rows. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error deleting rows:", error);
+      alert("Failed to delete rows. Please try again.");
     }
+
     setSelectionModel([]);
     console.log("Rows after deletion:", rows);
   };

@@ -34,7 +34,7 @@ export default function ViewDataPage() {
         }
       });
       if (response.status === 200) {
-          console.log("Data fetched successfully:", response.data);
+          // console.log("Data fetched successfully:", response.data);
           
         setRows(response.data);
       } else {

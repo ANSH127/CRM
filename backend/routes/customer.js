@@ -9,7 +9,7 @@ router.use(requireAuth);
 router.get('/', CustomerController.getCustomers);
 router.post('/create', CustomerController.createCustomer);
 router.post('/create_multiple', CustomerController.createMultipleCustomers);
-router.delete('/delete_multiple', CustomerController.deleteCustomers);
+router.post('/delete_multiple', CustomerController.deleteCustomers);
 
 
 module.exports = router;

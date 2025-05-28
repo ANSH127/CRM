@@ -60,6 +60,8 @@ const createMultipleCustomers = async (req, res) => {
 // delete a customer by array of ids
 const deleteCustomers = async (req, res) => {
     const { ids } = req.body; 
+    console.log('Deleting customers with IDs:', ids);
+    
     if (!Array.isArray(ids) || ids.length === 0) {
         return res.status(400).json({ error: 'Invalid data format' });
     }

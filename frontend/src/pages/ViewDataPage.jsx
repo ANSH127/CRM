@@ -24,31 +24,70 @@ export default function ViewDataPage() {
 
   const [open, setOpen] = React.useState(false);
   const [rows, setRows] = React.useState([]);
-
+  const [file, setFile] = React.useState(null);
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/customer/",{
-        headers:{
-          'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user')).token}`
-        }
+      const response = await axios.get("http://localhost:3000/api/customer/", {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("user")).token
+          }`,
+        },
       });
       if (response.status === 200) {
-          // console.log("Data fetched successfully:", response.data);
-          
+        // console.log("Data fetched successfully:", response.data);
+
         setRows(response.data);
       } else {
         console.error("Failed to fetch data:", response.statusText);
       }
-
-      
     } catch (error) {
       console.error("Error fetching data:", error);
-      
+    }
+  };
+
+  const handleFileUpload = async () => {
+    if (!file) {
+      alert("Please select a file to upload.");
+      return;
+    }
+    // file size limit check
+    if (file.size > 1 * 1024 * 1024) { 
+      alert("File size exceeds 5 MB limit. Please upload a smaller file.");
+      return;
     }
 
+    const formData = new FormData();
+    formData.append("file", file);
 
-  }
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/customer/create_multiple",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${
+              JSON.parse(localStorage.getItem("user")).token
+            }`,
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        alert("File uploaded successfully!");
+        fetchData(); // Refresh data after upload
+      } else {
+        console.error("Failed to upload file:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      alert("Failed to upload file. Please try again.");
+    }
+    setFile(null); // Reset file input after upload
+  };
+
   React.useEffect(() => {
     fetchData();
   }, []);
@@ -63,10 +102,34 @@ export default function ViewDataPage() {
         >
           Add Data
         </button>
-        <BasicModal open={open} onClose={() => setOpen(false)} 
-          fetchData={fetchData} 
-          
-         />
+        <div>
+          <input
+            type="file"
+            id="fileInput"
+            className="ml-4
+          border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            accept=".csv, .xlsx, .xls"
+            placeholder="Upload File"
+            onChange={(e) => {
+              const selectedFile = e.target.files[0];
+              if (selectedFile) {
+                setFile(selectedFile);
+              }
+            }}
+          />
+          <button
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2"
+            onClick={handleFileUpload}
+          >
+            Upload File
+          </button>
+        </div>
+
+        <BasicModal
+          open={open}
+          onClose={() => setOpen(false)}
+          fetchData={fetchData}
+        />
       </div>
 
       <DataTable columns={columns} rows={rows} />

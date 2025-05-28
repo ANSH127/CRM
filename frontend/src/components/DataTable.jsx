@@ -53,6 +53,7 @@ export default function DataTable({ columns, rows: initialRows }) {
         }}
         selectionModel={selectionModel}
         sx={{ border: 0 }}
+        getRowId={(row) => row._id}
       />
     </Paper>
   );

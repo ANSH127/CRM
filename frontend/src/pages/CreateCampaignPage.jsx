@@ -52,14 +52,20 @@ export default function CreateCampaignPage() {
             query={query}
             onQueryChange={setQuery}
           />
-          <h3>
-            <code>{formatQuery(query, "mongodb")}</code>
+          <h3 className="mt-4 text-gray-700">
+            <code>
+              {JSON.stringify(formatQuery(query, "mongodb_query"), null, 2)}
+            </code>
           </h3>
         </div>
 
         <button
           type="submit"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+          onClick={() => {
+            // Handle campaign creation logic here
+            console.log("Campaign created with query:", JSON.stringify(formatQuery(query, "mongodb_query"), null, 2));
+          }}
         >
           Create Campaign
         </button>

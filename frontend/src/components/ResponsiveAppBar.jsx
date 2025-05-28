@@ -7,13 +7,24 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import { Link } from 'react-router-dom';
 
-const pages = ['🏠 Dashboard', '📋 Add Data','📈 Campaign History'];
+const pages = [
+  {
+    label: ' 🏠 Dashboard',
+    path: '/',
+  },
+  {
+    label: '📋 Add/View Data',
+    path: '/view-data',
+  },
+  {
+    label: '📈 Campaign History',
+    path: '/campaign-history',
+  },
+];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -75,8 +86,8 @@ function ResponsiveAppBar() {
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center' ,color:'black'}}>{page}</Typography>
+                <MenuItem key={page.label} onClick={handleCloseNavMenu}>
+                  <Link to={page.path} sx={{ textAlign: 'center' ,color:'black'}}>{page.label}</Link>
                 </MenuItem>
               ))}
             </Menu>
@@ -100,13 +111,14 @@ function ResponsiveAppBar() {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
-              <Button
-                key={page}
+              <Link
+                to={page.path}
+                key={page.label}
                 onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'black', display: 'block', fontWeight: 'bold' }}
+                style={{  color: 'black', display: 'block', fontWeight: 'bold',margin: '0 5px' }}
               >
-                {page}
-              </Button>
+                {page.label}
+              </Link>
             ))}
           </Box>
         </Toolbar>

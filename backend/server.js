@@ -1,19 +1,22 @@
 require('dotenv').config();
 const express = require('express');
-const mongoose=require('mongoose');
+const mongoose = require('mongoose');
+const cors = require('cors');
 const app = express();
 const UserRoutes = require('./routes/user');
 
 
 const port = 3000;
 
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
+
 app.use(express.json());
 
 app.use('/api/user', UserRoutes);
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
 
 // connect to the database
 

@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const app = express();
 const UserRoutes = require('./routes/user');
+const CustomerRoutes = require('./routes/customer');
 
 
 const port = 3000;
@@ -16,6 +17,7 @@ app.use(cors({
 app.use(express.json());
 
 app.use('/api/user', UserRoutes);
+app.use('/api/customer', CustomerRoutes);
 
 
 // connect to the database

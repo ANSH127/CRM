@@ -1,18 +1,56 @@
 import React from "react";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [loginError, setLoginError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const navigate = useNavigate();
 
   const handleGoogleSuccess = async (response) => {
-    console.log("Google Login Success:", response);
+    setLoading(true);
+    try {
+      const res = await axios.post("http://localhost:3000/api/user/google-login", {
+        credential: response.credential,
+      });
+      if(res.status === 200) {
+        const { name, email, token } = res.data;
+        localStorage.setItem("user", JSON.stringify({ name, email, token }));
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Google Login Error:", error);
+      setLoginError("Google Login Failed");
+    } finally {
+      setLoading(false);
+    }
+
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setLoginError("");
+    try {
+      const res = await axios.post("http://localhost:3000/api/user/login", {
+        email,
+        password,
+      });
+      if (res.status === 200) {
+        const { name, email, token } = res.data;
+        localStorage.setItem("user", JSON.stringify({ name, email, token }));
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Login Error:", error);
+      setLoginError(error.response?.data?.error || "Login Failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -67,9 +105,9 @@ export default function LoginPage() {
 
           <p className="text-center text-sm text-gray-500 mt-4">
             Don't have an account?{" "}
-            <a href="/signup" className="text-blue-600 hover:underline">
+            <Link to='/signup'  className="text-blue-600 hover:underline">
               Sign Up
-            </a>
+            </Link>
           </p>
           <div className="my-6 flex items-center">
             <hr className="flex-grow border-gray-300" />

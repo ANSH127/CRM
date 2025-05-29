@@ -52,13 +52,13 @@ export default function CampaignDetailPage() {
 
   return (
     <div className="min-h-screen  py-8 px-2">
-      <h1 className="text-4xl font-extrabold text-center mb-8 text-blue-700 drop-shadow">
+      <h1 className="text-4xl font-extrabold text-center mb-8 text-black drop-shadow">
         Campaign Details
       </h1>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl mx-auto">
 
         <div className="bg-white rounded-2xl  p-6 lg:col-span-9">
-          <h2 className="text-2xl font-bold mb-4 text-blue-600 flex items-center gap-2">
+          <h2 className="text-2xl font-bold mb-4 text-black flex items-center gap-2">
             Records
           </h2>
           {loading ? (
@@ -74,7 +74,7 @@ export default function CampaignDetailPage() {
           )}
         </div>
         <div className="bg-white rounded-2xl shadow-lg p-6 lg:col-span-3 flex flex-col gap-3">
-          <h2 className="text-xl font-bold mb-4 text-blue-600">Campaign Info</h2>
+          <h2 className="text-xl font-bold mb-4 text-black">Campaign Info</h2>
           <div className="mb-2">
             <span className="font-semibold text-gray-700">Campaign ID:</span>
             <span className="ml-2 text-gray-600 break-all">{id}</span>

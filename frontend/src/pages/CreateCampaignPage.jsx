@@ -17,6 +17,7 @@ export default function CreateCampaignPage() {
     rules: [],
   });
   const [loading, setLoading] = React.useState(false);
+  const [loading2, setLoading2] = React.useState(false);
   const [matchcount, setMatchCount] = React.useState(0);
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
@@ -60,6 +61,7 @@ export default function CreateCampaignPage() {
       return;
     }
     try {
+      setLoading2(true);
       const response = await axios.post(
         "http://localhost:3000/api/campaign/create",
         {
@@ -87,6 +89,9 @@ export default function CreateCampaignPage() {
     } catch (error) {
       console.error("Error creating campaign:", error);
       alert("Failed to create campaign. Please try again.");
+    }
+    finally {
+      setLoading2(false);
     }
   };
 
@@ -169,8 +174,9 @@ export default function CreateCampaignPage() {
             type="submit"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
             onClick={handleSubmit}
+            disabled={loading2}
           >
-            Launch Campaign
+            {loading2 ? "Creating Campaign..." : "Create Campaign"}
           </button>
         </div>
       </div>

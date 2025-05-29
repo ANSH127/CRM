@@ -13,7 +13,9 @@ const createCampaign = async (req, res) => {
 
     try {
         // Fetch matched customers based on rules
-        const matchedCustomers = await CustomerModel.find(rules);
+         const filter = { $and: [rules, { uid: req.user._id }] };
+
+        const matchedCustomers = await CustomerModel.find(filter);
         if (matchedCustomers.length === 0) {
             return res.status(404).json({ error: 'No customers matched the provided rules' });
         }
@@ -53,7 +55,9 @@ const createCampaign = async (req, res) => {
 const getMatchedCustomersCount = async (req, res) => {
     const { rules } = req.body;
     try {
-        const customers = await CustomerModel.find(rules);
+        const filter = { $and: [rules, { uid: req.user._id }] };
+
+        const customers = await CustomerModel.find(filter);
         res.status(200).json({ count: customers.length });
     } catch (error) {
         console.error('Error fetching matched customers:', error);

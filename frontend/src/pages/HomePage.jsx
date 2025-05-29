@@ -5,6 +5,7 @@ import axios from "axios";
 export default function HomePage() {
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(true);
+  const [data, setData] = React.useState([]);
   const [metrics, setMetrics] = React.useState([
     {
       label: "Total Customers",
@@ -48,8 +49,8 @@ export default function HomePage() {
       if (response.status !== 200) {
         throw new Error("Failed to fetch user analytics");
       }
-      console.log(response.data);
-      
+      setData(response.data);
+
       setMetrics((prev) => [
         {
           ...prev[0],
@@ -61,7 +62,12 @@ export default function HomePage() {
         },
         {
           ...prev[2],
-          value:((response.data?.successfulcnt/response.data.lastCampaign?.matchedCustomersCount)*100).toFixed(1)+"%"  || prev[2].value
+          value:
+            (
+              (response.data?.successfulcnt /
+                response.data.lastCampaign?.matchedCustomersCount) *
+              100
+            ).toFixed(1) + "%" || prev[2].value,
         },
         {
           ...prev[3],
@@ -102,7 +108,11 @@ export default function HomePage() {
         <div className="flex justify-center gap-6 mt-8">
           <button
             className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg shadow transition cursor-pointer"
-            onClick={() => navigate("/create-campaign")}
+            onClick={() => {
+              data?.customerCount < 1
+                ? alert("Kindly add your data to create campaign")
+                : navigate("/create-campaign");
+            }}
           >
             ➕ Create New Campaign
           </button>

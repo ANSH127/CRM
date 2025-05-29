@@ -3,9 +3,9 @@ import { QueryBuilder, formatQuery } from "react-querybuilder";
 import "react-querybuilder/dist/query-builder.css";
 import Chip from "@mui/material/Chip";
 import axios from "axios";
-import {useNavigate} from "react-router-dom";
-  import { toast } from 'react-toastify';
-
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { initializeChat, fetchModelResponse } from "../config/AI";
 
 const fields = [
   { name: "total_spent", label: "Total Spent" },
@@ -20,11 +20,13 @@ export default function CreateCampaignPage() {
   });
   const [loading, setLoading] = React.useState(false);
   const [loading2, setLoading2] = React.useState(false);
+  const [loading3, setLoading3] = React.useState(false);
   const [matchcount, setMatchCount] = React.useState(0);
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [message, setMessage] = React.useState("");
   const navigate = useNavigate();
+  // const [prompt, setPrompt] = React.useState("");
 
   const fetchAudienceCount = async () => {
     const queryData = formatQuery(query, "mongodb_query");
@@ -84,7 +86,6 @@ export default function CreateCampaignPage() {
       if (response.status === 201) {
         toast.success("Campaign created successfully!");
         navigate("/campaign-history");
-        
       } else {
         throw new Error("Failed to create campaign");
       }
@@ -95,11 +96,52 @@ export default function CreateCampaignPage() {
       } else {
         toast.error("Campaign creation failed, please try again later");
       }
-    }
-    finally {
+    } finally {
       setLoading2(false);
     }
   };
+
+  const genrateMessages = async (prompt) => {
+    if (!prompt) {
+      toast.warning("Please enter a prompt to generate messages.");
+      return;
+    }
+    try {
+      setLoading3(true);
+      const response = await fetchModelResponse(prompt);
+      if (response) {
+        setMessage(response);
+        toast.success("Messages generated successfully!");
+      } else {
+        throw new Error("Failed to generate messages");
+      }
+    } catch (error) {
+      console.error("Error generating messages:", error);
+      toast.error("Failed to generate messages, please try again.");
+    }
+    finally{
+      setLoading3(false);
+    }
+  };
+
+  React.useEffect(() => {
+    initializeChat([
+      {
+        role: "user",
+        message: `You're a creative marketing assistant. Given a campaign objective, suggest 1 long, engaging promotional messages that include a personalized {name} placeholder and are suitable for email.
+
+            Make sure:
+            - Use emojis sparingly
+            - Include promotional offers or call-to-actions if relevant
+            - Use {name} instead of the actual name
+            - Avoid using the word "you" or "your"
+            - Only return the  message text without any additional explanations or formatting
+            - Do not include any HTML tags or formatting`,
+      },
+
+      
+    ]);
+  }, []);
 
   return (
     <div className="min-h-screen  flex items-center justify-center mt-10">
@@ -175,6 +217,14 @@ export default function CreateCampaignPage() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             ></textarea>
+            <div className="mt-2">
+              <Chip
+                label={loading3 ? "Generating..." : "Generate Messages"}
+                color="secondary"
+                className="cursor-pointer"
+                onClick={() => genrateMessages(message)}
+              />
+            </div>
           </div>
           <button
             type="submit"

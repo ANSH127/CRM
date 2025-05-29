@@ -56,16 +56,59 @@ export default function CreateCampaignPage() {
     }
   };
 
+  const genrateTag = async (prompt) => {
+    if (!prompt) {
+      toast.warning("Please enter a prompt to generate tags.");
+      return;
+    }
+    try {
+      const response = await fetchModelResponse(prompt);
+      return response;
+    } catch (error) {
+      console.error("Error generating tags:", error);
+      toast.error("Failed to generate tags, please try again.");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     let myquery = formatQuery(query, "mongodb_query");
-    console.log(name, description, myquery, message);
+    // console.log(name, description, myquery, message);
     if (!name || !description || !myquery || !message) {
       toast.warning("Please fill all fields before submitting.");
       return;
     }
     try {
       setLoading2(true);
+
+      const tagPrompt = `You're a marketing expert. Based on the audience rules and the campaign message, assign the most relevant tag that describes the intent of this campaign.
+
+              Choose one tag from these or suggest your own:
+              - Win-back
+              - Inactive Users
+              - High Value Customers
+              - Low Engagement
+              - New User Offer
+              - Discount Push
+              - Festival Sale
+              - Loyalty Reward
+              - Abandoned Cart
+
+              Audience Rules:
+              ${JSON.stringify(myquery)}
+
+              Message:
+              ${message}
+              Make sure to:
+              - Only return the tag name without any additional text
+              - If no tag fits, suggest a new tag that best describes the campaign intent
+              - Avoid using generic terms like "Marketing" or "Campaign"
+              - Focus on the specific intent of the campaign based on the audience and message
+`;
+      const tagResponse = await genrateTag(tagPrompt);
+      // console.log("Generated Tag:", tagResponse);
+      
+
       const response = await axios.post(
         "http://localhost:3000/api/campaign/create",
         {
@@ -73,6 +116,7 @@ export default function CreateCampaignPage() {
           description,
           rules: myquery,
           message,
+          tag: tagResponse || "General",
         },
         {
           headers: {
@@ -118,8 +162,7 @@ export default function CreateCampaignPage() {
     } catch (error) {
       console.error("Error generating messages:", error);
       toast.error("Failed to generate messages, please try again.");
-    }
-    finally{
+    } finally {
       setLoading3(false);
     }
   };
@@ -138,8 +181,6 @@ export default function CreateCampaignPage() {
             - Only return the  message text without any additional explanations or formatting
             - Do not include any HTML tags or formatting`,
       },
-
-      
     ]);
   }, []);
 

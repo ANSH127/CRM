@@ -87,6 +87,8 @@ export default function HomePage() {
       navigate("/login");
     }
     fetchMetrics();
+
+    
   }, []);
 
   return (
@@ -114,7 +116,7 @@ export default function HomePage() {
                 : navigate("/create-campaign");
             }}
           >
-            ➕ Create New Campaign
+            {"\u2795"} Create New Campaign
           </button>
           <button
             className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg shadow transition cursor-pointer"

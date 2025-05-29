@@ -171,7 +171,9 @@ export default function CampaignDetailPage() {
           </div>
           <div className="mb-2">
             <span className="font-semibold text-gray-700">Message:</span>
-            <span className="ml-2 text-gray-600">{data.campaign?.message}</span>
+            <span className="ml-2 text-gray-600">
+            {data.campaign?.message.slice(0, 300)+ "..."|| "N/A"}
+            </span>
           </div>
           <div className="mb-2">
             <span className="font-semibold text-gray-700">Rules:</span>

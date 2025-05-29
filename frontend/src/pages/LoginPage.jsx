@@ -2,14 +2,13 @@ import React from "react";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [loginError, setLoginError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const navigate = useNavigate();
+
 
   const handleGoogleSuccess = async (response) => {
     setLoading(true);
@@ -20,7 +19,7 @@ export default function LoginPage() {
       if(res.status === 200) {
         const { name, email, token } = res.data;
         localStorage.setItem("user", JSON.stringify({ name, email, token }));
-        navigate("/");
+        window.location.href="/"
       }
     } catch (error) {
       console.error("Google Login Error:", error);
@@ -43,7 +42,8 @@ export default function LoginPage() {
       if (res.status === 200) {
         const { name, email, token } = res.data;
         localStorage.setItem("user", JSON.stringify({ name, email, token }));
-        navigate("/");
+        window.location.href="/";
+
       }
     } catch (error) {
       console.error("Login Error:", error);

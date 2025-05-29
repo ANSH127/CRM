@@ -52,9 +52,9 @@ export default function CampaignDetailPage() {
 
   return (
     <div className="min-h-screen  py-8 px-2">
-      <h1 className="text-4xl font-extrabold text-center mb-8 text-black drop-shadow">
+      <h3 className="text-3xl font-bold text-center mb-8 text-black drop-shadow">
         Campaign Details
-      </h1>
+      </h3>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl mx-auto">
 
         <div className="bg-white rounded-2xl  p-6 lg:col-span-9">

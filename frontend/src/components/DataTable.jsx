@@ -7,7 +7,7 @@ import axios from "axios";
 export default function DataTable({ columns, rows: initialRows }) {
   const [rows, setRows] = React.useState(initialRows);
   const [selectionModel, setSelectionModel] = React.useState([]);
-  const paginationModel = { page: 0, pageSize: 5 };
+  const paginationModel = { page: 0, pageSize: 10 };
 
   const handleDelete = async () => {
     // console.log("Selected rows for deletion:", selectionModel);

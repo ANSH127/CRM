@@ -11,18 +11,23 @@ const createCampaign = async (req, res) => {
     }
 
     try {
+        // Fetch matched customers based on rules
+        const matchedCustomers = await CustomerModel.find(rules);
+        if (matchedCustomers.length === 0) {
+            return res.status(404).json({ error: 'No customers matched the provided rules' });
+        }
+
         const campaign = new CampaignModel({
             uid: req.user._id,
             name,
             description,
             rules,
-            message
+            message,
+            matchedCustomersCount: matchedCustomers.length
         });
 
         await campaign.save();
 
-        // Fetch matched customers based on rules
-        const matchedCustomers = await CustomerModel.find(rules);
 
         // Simulate sending messages to matched customers
         for (const customer of matchedCustomers) {

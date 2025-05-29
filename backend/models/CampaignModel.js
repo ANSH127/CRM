@@ -29,6 +29,10 @@ const campaignSchema = new mongoose.Schema({
         type:String,
         required:true
 
+    },
+    matchedCustomersCount: {
+        type: Number,
+        default: 0
     }
 })
 

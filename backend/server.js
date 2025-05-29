@@ -5,6 +5,7 @@ const cors = require('cors');
 const app = express();
 const UserRoutes = require('./routes/user');
 const CustomerRoutes = require('./routes/customer');
+const CampaignRoutes = require('./routes/campaign');
 
 
 const port = 3000;
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use('/api/user', UserRoutes);
 app.use('/api/customer', CustomerRoutes);
+app.use('/api/campaign', CampaignRoutes);
 
 
 // connect to the database

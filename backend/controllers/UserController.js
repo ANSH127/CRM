@@ -1,4 +1,8 @@
 const UserModel = require('../models/UserModel');
+const CustomerModel = require('../models/CustomerModel');
+const CampaignModel = require('../models/CampaignModel');
+
+
 const jwt = require('jsonwebtoken')
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -59,10 +63,24 @@ const googleLogin = async (req, res) => {
     }
 }
 
+
+const getUserAnalytics = async (req, res) => {
+    const userId = req.user._id;
+    try {
+        const customerCount = await CustomerModel.countDocuments({ uid:userId });
+        const campaignCount = await CampaignModel.countDocuments({uid:userId });
+        const lastCampaign = await CampaignModel.findOne({ uid: userId }).sort({ createdAt: -1 });
+        res.status(200).json({ customerCount, campaignCount, lastCampaign });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 module.exports = {
     signup,
     login,
-    googleLogin
+    googleLogin,
+    getUserAnalytics
 };
 
 

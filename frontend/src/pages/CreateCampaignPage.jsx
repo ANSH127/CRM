@@ -3,6 +3,7 @@ import { QueryBuilder, formatQuery } from "react-querybuilder";
 import "react-querybuilder/dist/query-builder.css";
 import Chip from "@mui/material/Chip";
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 const fields = [
   { name: "total_spent", label: "Total Spent" },
@@ -17,6 +18,10 @@ export default function CreateCampaignPage() {
   });
   const [loading, setLoading] = React.useState(false);
   const [matchcount, setMatchCount] = React.useState(0);
+  const [name, setName] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [message, setMessage] = React.useState("");
+  const navigate = useNavigate();
 
   const fetchAudienceCount = async () => {
     const queryData = formatQuery(query, "mongodb_query");
@@ -46,10 +51,48 @@ export default function CreateCampaignPage() {
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    let myquery = formatQuery(query, "mongodb_query");
+    console.log(name, description, myquery, message);
+    if (!name || !description || !myquery || !message) {
+      alert("Please fill all fields");
+      return;
+    }
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/campaign/create",
+        {
+          name,
+          description,
+          rules: myquery,
+          message,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${
+              JSON.parse(localStorage.getItem("user")).token
+            }`,
+          },
+        }
+      );
+      if (response.status === 201) {
+        alert("Campaign created successfully!");
+        navigate("/campaign-history");
+        
+      } else {
+        throw new Error("Failed to create campaign");
+      }
+    } catch (error) {
+      console.error("Error creating campaign:", error);
+      alert("Failed to create campaign. Please try again.");
+    }
+  };
+
   return (
     <div className="min-h-screen  flex items-center justify-center mt-10">
       <div className="flex flex-col md:flex-row bg-white  rounded-lg overflow-hidden w-full lg:w-[90%]">
-      
         <div className="md:w-1/2 flex items-center justify-center">
           <img
             src="/images/create-campaign.jpg"
@@ -72,6 +115,8 @@ export default function CreateCampaignPage() {
               type="text"
               placeholder="Enter campaign name"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
           <div className="mb-4">
@@ -81,6 +126,8 @@ export default function CreateCampaignPage() {
             <textarea
               placeholder="Enter campaign description"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
             ></textarea>
           </div>
           <div className="mb-4">
@@ -114,11 +161,14 @@ export default function CreateCampaignPage() {
               placeholder="Enter campaign message"
               className="shadow appearance-none border rounded w-full py-4 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               style={{ minHeight: "120px" }}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
             ></textarea>
           </div>
           <button
             type="submit"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+            onClick={handleSubmit}
           >
             Launch Campaign
           </button>

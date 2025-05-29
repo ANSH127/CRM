@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 export default function CampaignHistoryPage() {
   const navigate = useNavigate();
@@ -28,11 +29,16 @@ export default function CampaignHistoryPage() {
         setCampaigns(response.data);
       } else {
         console.error("Failed to fetch campaign history:", response.statusText);
-        alert("Failed to fetch campaign history. Please try again.");
+        toast.error("Failed to fetch campaign history. Please try again.");
       }
     } catch (error) {
       console.error("Error fetching campaign history:", error);
-      alert("Failed to fetch campaign history. Please try again.");
+      if (error.response && error.response.status === 401) {
+        toast.error("Unauthorized access. Please log in again.");
+        navigate("/login");
+      } else {
+        toast.error("Error fetching campaign history. Please check your connection.");
+      }
     } finally {
       setLoading(false);
     }

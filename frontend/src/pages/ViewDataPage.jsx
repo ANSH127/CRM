@@ -2,6 +2,8 @@ import React from "react";
 import DataTable from "../components/DataTable";
 import BasicModal from "../components/Modal";
 import axios from "axios";
+  import { toast } from 'react-toastify';
+
 
 export default function ViewDataPage() {
   // Define columns for DataGrid
@@ -40,9 +42,11 @@ export default function ViewDataPage() {
 
         setRows(response.data);
       } else {
+        toast.error("Failed to fetch data. Please try again later.");
         console.error("Failed to fetch data:", response.statusText);
       }
     } catch (error) {
+      toast.error("Error fetching data. Please check your connection.");
       console.error("Error fetching data:", error);
     }
     finally{
@@ -52,12 +56,12 @@ export default function ViewDataPage() {
 
   const handleFileUpload = async () => {
     if (!file) {
-      alert("Please select a file to upload.");
+      toast.error("No file selected for upload.");
       return;
     }
     // file size limit check
     if (file.size > 100 * 1024) {
-      alert("File size exceeds 100 KB limit. Please upload a smaller file.");
+      toast.warning("File size exceeds 100KB limit. Please select a smaller file.");
       return;
     }
 
@@ -83,10 +87,11 @@ export default function ViewDataPage() {
         fetchData(); // Refresh data after upload
       } else {
         console.error("Failed to upload file:", response.statusText);
+        toast.error("Failed to upload file. Please try again.");
       }
     } catch (error) {
       console.error("Error uploading file:", error);
-      alert("Failed to upload file. Please try again.");
+      toast.error("Error uploading file. Please check your connection.");
     }
     setFile(null); // Reset file input after upload
   };

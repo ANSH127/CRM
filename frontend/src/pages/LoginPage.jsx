@@ -2,11 +2,12 @@ import React from "react";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { Link } from "react-router-dom";
 import axios from "axios";
+  import { toast } from 'react-toastify';
+
 
 export default function LoginPage() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [loginError, setLoginError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
 
@@ -23,7 +24,7 @@ export default function LoginPage() {
       }
     } catch (error) {
       console.error("Google Login Error:", error);
-      setLoginError("Google Login Failed");
+      toast.error("Google Login Failed");
     } finally {
       setLoading(false);
     }
@@ -33,7 +34,6 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setLoginError("");
     try {
       const res = await axios.post("http://localhost:3000/api/user/login", {
         email,
@@ -47,7 +47,11 @@ export default function LoginPage() {
       }
     } catch (error) {
       console.error("Login Error:", error);
-      setLoginError(error.response?.data?.error || "Login Failed");
+      if (error.response && error.response.status === 400) {
+        toast.error("Invalid email or password");
+      } else {
+        toast.error("Login failed, please try again later");
+      }
     } finally {
       setLoading(false);
     }
@@ -117,12 +121,9 @@ export default function LoginPage() {
           <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
-              onError={() => setLoginError("Google Login Failed")}
+              onError={() => toast.error("Google Login Failed")}
               disabled={loading}
             />
-            {loginError && (
-              <p className="error text-red-500 mt-2">{loginError}</p>
-            )}
           </GoogleOAuthProvider>
         </div>
       </div>

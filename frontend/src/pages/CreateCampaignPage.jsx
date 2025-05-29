@@ -4,6 +4,8 @@ import "react-querybuilder/dist/query-builder.css";
 import Chip from "@mui/material/Chip";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
+  import { toast } from 'react-toastify';
+
 
 const fields = [
   { name: "total_spent", label: "Total Spent" },
@@ -46,7 +48,7 @@ export default function CreateCampaignPage() {
       setMatchCount(response.data.count);
     } catch (error) {
       console.error("Error fetching audience count:", error);
-      alert("Failed to fetch audience count. Please try again.");
+      toast.error("Failed to fetch audience count. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -57,7 +59,7 @@ export default function CreateCampaignPage() {
     let myquery = formatQuery(query, "mongodb_query");
     console.log(name, description, myquery, message);
     if (!name || !description || !myquery || !message) {
-      alert("Please fill all fields");
+      toast.warning("Please fill all fields before submitting.");
       return;
     }
     try {
@@ -80,7 +82,7 @@ export default function CreateCampaignPage() {
         }
       );
       if (response.status === 201) {
-        alert("Campaign created successfully!");
+        toast.success("Campaign created successfully!");
         navigate("/campaign-history");
         
       } else {
@@ -88,7 +90,11 @@ export default function CreateCampaignPage() {
       }
     } catch (error) {
       console.error("Error creating campaign:", error);
-      alert("Failed to create campaign. Please try again.");
+      if (error.response && error.response.status === 400) {
+        toast.error("Invalid input, please check your details");
+      } else {
+        toast.error("Campaign creation failed, please try again later");
+      }
     }
     finally {
       setLoading2(false);

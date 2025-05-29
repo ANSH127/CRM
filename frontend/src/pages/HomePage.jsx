@@ -1,6 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+  import { toast } from 'react-toastify';
+
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -77,6 +79,8 @@ export default function HomePage() {
       ]);
     } catch (error) {
       console.error("Error fetching user analytics:", error);
+      toast.error("Failed to fetch user metrics. Please try again later.");
+     
     } finally {
       setLoading(false);
     }

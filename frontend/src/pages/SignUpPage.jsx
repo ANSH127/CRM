@@ -3,12 +3,13 @@ import { Link } from "react-router-dom";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+  import { toast } from 'react-toastify';
+
 
 export default function SignUpPage() {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [loginError, setLoginError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
     const navigate = useNavigate();
 
@@ -25,7 +26,7 @@ export default function SignUpPage() {
       }
     } catch (error) {
       console.error("Google Login Error:", error);
-      setLoginError("Google Login Failed");
+      toast.error("Google Login Failed");
     } finally {
       setLoading(false);
     }
@@ -35,7 +36,6 @@ export default function SignUpPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setLoginError("");
     try {
       const res = await axios.post("http://localhost:3000/api/user/signup", {
         name,
@@ -49,7 +49,11 @@ export default function SignUpPage() {
       }
     } catch (error) {
       console.error("Signup Error:", error);
-      setLoginError(error.response?.data?.error || "Signup Failed");
+      if (error.response && error.response.status === 400) {
+        toast.error("Invalid input, please check your details");
+      } else {
+        toast.error("Signup failed, please try again later");
+      }
     } finally {
       setLoading(false);
     }
@@ -133,12 +137,9 @@ export default function SignUpPage() {
           <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
-              onError={() => setLoginError("Google Login Failed")}
+              onError={() => toast.error("Google Login Failed")}
               disabled={loading}
             />
-            {loginError && (
-              <p className="error text-red-500 mt-2">{loginError}</p>
-            )}
           </GoogleOAuthProvider>
         </div>
       </div>

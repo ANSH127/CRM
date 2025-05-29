@@ -3,6 +3,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import axios from "axios";
+import { toast } from 'react-toastify';
 
 export default function DataTable({ columns, rows: initialRows,enableDelete }) {
   const [rows, setRows] = React.useState(initialRows);
@@ -10,7 +11,6 @@ export default function DataTable({ columns, rows: initialRows,enableDelete }) {
   const paginationModel = { page: 0, pageSize: 10 };
 
   const handleDelete = async () => {
-    // console.log("Selected rows for deletion:", selectionModel);
 
     const ids = [...selectionModel];
     
@@ -30,20 +30,23 @@ export default function DataTable({ columns, rows: initialRows,enableDelete }) {
       );
 
       if (response.status === 200) {
-        console.log("Rows deleted successfully:", response.data);
-        alert("Selected rows deleted successfully!");
+        // console.log("Rows deleted successfully:", response.data);
+        toast.success("Selected rows deleted successfully!");
         window.location.reload(); 
       } else {
         console.error("Failed to delete rows:", response.statusText);
-        alert("Failed to delete rows. Please try again.");
+        toast.error("Failed to delete selected rows. Please try again.");
       }
     } catch (error) {
       console.error("Error deleting rows:", error);
-      alert("Failed to delete rows. Please try again.");
+      if (error.response && error.response.status === 400) {
+        toast.error("Invalid request. Please check your selection.");
+      } else {
+        toast.error("Failed to delete selected rows. Please try again later.");
+      }
     }
 
     setSelectionModel([]);
-    console.log("Rows after deletion:", rows);
   };
 
   React.useEffect(() => {

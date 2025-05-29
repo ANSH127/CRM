@@ -2,6 +2,8 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import DataTable from "../components/DataTable";
+  import { toast } from 'react-toastify';
+
 
 const columns = [
   { field: "createdAt", headerName: "Created At", width: 180 },
@@ -36,11 +38,15 @@ export default function CampaignDetailPage() {
         setData(response.data);
       } else {
         console.error("Failed to fetch campaign details:", response.statusText);
-        alert("Failed to fetch campaign details. Please try again.");
+        toast.error("Failed to fetch campaign details. Please try again.");
       }
     } catch (error) {
       console.error("Error fetching campaign details:", error);
-      alert("Failed to fetch campaign details. Please try again.");
+      if (error.response && error.response.status === 401) {
+        toast.error("Unauthorized access. Please log in again.");
+      } else {
+        toast.error("Error fetching campaign details. Please check your connection.");
+      }
     } finally {
       setLoading(false);
     }

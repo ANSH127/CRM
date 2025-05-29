@@ -13,6 +13,8 @@ import ViewDataPage from "./pages/ViewDataPage";
 import CreateCampaignPage from "./pages/CreateCampaignPage";
 import CampaignHistoryPage from "./pages/CampaignHistoryPage";
 import CampaignDetailPage from "./pages/CampaignDetailPage";
+import { ToastContainer } from 'react-toastify';
+
 function App() {
 
   return (
@@ -29,6 +31,7 @@ function App() {
           <Route path="/campaign-detail/:id" element={<CampaignDetailPage />} />
       
         </Routes>
+        <ToastContainer/>
       </Router>
     </>
   );

@@ -3,6 +3,8 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import axios from "axios";
+  import { toast } from 'react-toastify';
+
 
 const style = {
   position: "absolute",
@@ -45,13 +47,17 @@ export default function BasicModal({ open, onClose,fetchData }) {
         }
       );
       if(response.status === 201) {
-        alert("Customer added successfully!");
+        toast.success("Customer added successfully!");
         fetchData(); 
 
       }
     } catch (error) {
       console.error("Error adding customer:", error);
-      alert("Failed to add customer. Please try again.");
+      if (error.response && error.response.status === 400) {
+        toast.error("Invalid input, please check your details");
+      } else {
+        toast.error("Failed to add customer, please try again later");
+      }
     }
 
     setForm({

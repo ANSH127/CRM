@@ -20,7 +20,7 @@ export default function HomePage() {
     },
     {
       label: "Last Campaign Delivery Rate",
-      value: "91.2%",
+      value: "0%",
       color: "bg-yellow-100",
       text: "text-yellow-700",
     },
@@ -48,6 +48,8 @@ export default function HomePage() {
       if (response.status !== 200) {
         throw new Error("Failed to fetch user analytics");
       }
+      console.log(response.data);
+      
       setMetrics((prev) => [
         {
           ...prev[0],
@@ -57,7 +59,10 @@ export default function HomePage() {
           ...prev[1],
           value: response.data.campaignCount || prev[1].value,
         },
-        prev[2],
+        {
+          ...prev[2],
+          value:((response.data?.successfulcnt/response.data.lastCampaign?.matchedCustomersCount)*100).toFixed(1)+"%"  || prev[2].value
+        },
         {
           ...prev[3],
           value:

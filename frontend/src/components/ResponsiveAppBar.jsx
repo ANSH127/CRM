@@ -29,7 +29,7 @@ const pages = [
     enable: isloggedin,
   },
   {
-    label: "Logout",
+    label: "⍈ Logout",
     path: "/login",
     enable: isloggedin,
   },

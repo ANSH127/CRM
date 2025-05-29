@@ -12,7 +12,6 @@ const createCampaign = async (req, res) => {
     }
 
     try {
-        // Fetch matched customers based on rules
          const filter = { $and: [rules, { uid: req.user._id }] };
 
         const matchedCustomers = await CustomerModel.find(filter);

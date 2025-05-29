@@ -155,7 +155,7 @@ export default function ViewDataPage() {
       </div>
       {
         loading ? <div className="text-center text-gray-500">Loading...</div> :
-        <DataTable columns={columns} rows={rows} />}
+        <DataTable columns={columns} rows={rows} enableDelete={true} />}
     </div>
   );
 }

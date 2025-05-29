@@ -4,7 +4,7 @@ import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import axios from "axios";
 
-export default function DataTable({ columns, rows: initialRows }) {
+export default function DataTable({ columns, rows: initialRows,enableDelete }) {
   const [rows, setRows] = React.useState(initialRows);
   const [selectionModel, setSelectionModel] = React.useState([]);
   const paginationModel = { page: 0, pageSize: 10 };
@@ -62,21 +62,24 @@ export default function DataTable({ columns, rows: initialRows }) {
       }}
     >
       <div className="flex justify-end mb-2">
-        <Button
+        {
+        enableDelete &&
+          <Button
           variant="contained"
           color="error"
           onClick={handleDelete}
           disabled={selectionModel.length === 0}
         >
           Delete Selected
-        </Button>
+        </Button>}
       </div>
       <DataGrid
         rows={rows}
         columns={columns}
         initialState={{ pagination: { paginationModel } }}
         pageSizeOptions={[5, 10,50]}
-        checkboxSelection
+        checkboxSelection={enableDelete}
+        
         onRowSelectionModelChange={(newSelection) => {
           setSelectionModel(newSelection.ids);
         }}

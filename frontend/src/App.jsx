@@ -12,6 +12,7 @@ import HomePage from "./pages/HomePage";
 import ViewDataPage from "./pages/ViewDataPage";
 import CreateCampaignPage from "./pages/CreateCampaignPage";
 import CampaignHistoryPage from "./pages/CampaignHistoryPage";
+import CampaignDetailPage from "./pages/CampaignDetailPage";
 function App() {
 
   return (
@@ -25,7 +26,8 @@ function App() {
           <Route path="/view-data" element={<ViewDataPage />} />
           <Route path="/create-campaign" element={<CreateCampaignPage />} />
           <Route path="/campaign-history" element={<CampaignHistoryPage />} />
-
+          <Route path="/campaign-detail/:id" element={<CampaignDetailPage />} />
+      
         </Routes>
       </Router>
     </>

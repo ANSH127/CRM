@@ -77,12 +77,19 @@ export default function CampaignHistoryPage() {
                 </p>
                 <div className="flex flex-wrap items-center gap-2 mt-auto">
                   <span className="inline-block bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium">
-                    Matched: {campaign.matchedCustomersCount}
+                    Audience Size: {campaign.matchedCustomersCount}
                   </span>
                   <span className="inline-block bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full text-xs">
                     Status: {campaign.status || "Created"}
                   </span>
                 </div>
+
+                <button
+                  onClick={() => navigate(`/campaign-detail/${campaign._id}`)}
+                  className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer"
+                >
+                  View Details
+                </button>
               </div>
             ))}
           </div>

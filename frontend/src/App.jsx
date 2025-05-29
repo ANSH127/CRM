@@ -11,6 +11,7 @@ import SignUpPage from "./pages/SignUpPage";
 import HomePage from "./pages/HomePage";
 import ViewDataPage from "./pages/ViewDataPage";
 import CreateCampaignPage from "./pages/CreateCampaignPage";
+import CampaignHistoryPage from "./pages/CampaignHistoryPage";
 function App() {
 
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/view-data" element={<ViewDataPage />} />
           <Route path="/create-campaign" element={<CreateCampaignPage />} />
+          <Route path="/campaign-history" element={<CampaignHistoryPage />} />
 
         </Routes>
       </Router>

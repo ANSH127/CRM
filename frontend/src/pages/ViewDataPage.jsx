@@ -20,14 +20,14 @@ export default function ViewDataPage() {
     { field: "last_order_date", headerName: "Last Order Date", width: 200 },
   ];
 
-  // Example row data
-
   const [open, setOpen] = React.useState(false);
   const [rows, setRows] = React.useState([]);
   const [file, setFile] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const response = await axios.get("http://localhost:3000/api/customer/", {
         headers: {
           Authorization: `Bearer ${
@@ -44,6 +44,9 @@ export default function ViewDataPage() {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+    }
+    finally{
+      setLoading(false);
     }
   };
 
@@ -150,7 +153,9 @@ export default function ViewDataPage() {
           fetchData={fetchData}
         />
       </div>
-      <DataTable columns={columns} rows={rows} />
+      {
+        loading ? <div className="text-center text-gray-500">Loading...</div> :
+        <DataTable columns={columns} rows={rows} />}
     </div>
   );
 }

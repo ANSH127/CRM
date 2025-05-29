@@ -54,7 +54,11 @@ export default function HomePage() {
           Here’s what’s happening in your CRM today.
         </p>
         <div className="flex justify-center gap-6 mt-8">
-          <button className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg shadow transition">
+          <button className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg shadow transition cursor-pointer"
+          onClick={
+            () => navigate("/create-campaign")
+          }
+          >
             ➕ Create New Campaign
           </button>
           <button className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg shadow transition cursor-pointer"

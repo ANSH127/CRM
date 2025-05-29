@@ -92,7 +92,7 @@ export default function CampaignDetailPage() {
             </span>
           </div>
           <div className="mb-2">
-            <span className="font-semibold text-gray-700">Matched Customers:</span>
+            <span className="font-semibold text-gray-700">Audience Size:</span>
             <span className="ml-2 text-green-700 font-semibold">
               {data.records?.length || 0}
             </span>

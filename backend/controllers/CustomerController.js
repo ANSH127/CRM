@@ -1,6 +1,5 @@
 const CustomerModel = require('../models/CustomerModel');
 const xlsx = require('xlsx');
-const fs = require('fs');
 const { redisClient } = require('../config/redisClient');
 
 
@@ -55,7 +54,7 @@ const createMultipleCustomers = async (req, res) => {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
-        const workbook = xlsx.readFile(req.file.path);
+        const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const data = xlsx.utils.sheet_to_json(worksheet);
@@ -95,10 +94,6 @@ const createMultipleCustomers = async (req, res) => {
     } catch (error) {
         console.error('Error creating multiple customers:', error);
         res.status(400).json({ error: ' Error creating customers' });
-    }
-    finally {
-        fs.unlinkSync(req.file.path);
-
     }
 }
 

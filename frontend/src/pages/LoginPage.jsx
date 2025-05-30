@@ -2,25 +2,26 @@ import React from "react";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { Link } from "react-router-dom";
 import axios from "axios";
-  import { toast } from 'react-toastify';
-
+import { toast } from "react-toastify";
 
 export default function LoginPage() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
-
   const handleGoogleSuccess = async (response) => {
     setLoading(true);
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/user/google-login`, {
-        credential: response.credential,
-      });
-      if(res.status === 200) {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/user/google-login`,
+        {
+          credential: response.credential,
+        }
+      );
+      if (res.status === 200) {
         const { name, email, token } = res.data;
         localStorage.setItem("user", JSON.stringify({ name, email, token }));
-        window.location.href="/"
+        window.location.href = "/";
       }
     } catch (error) {
       console.error("Google Login Error:", error);
@@ -28,22 +29,23 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
-
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/user/login`, {
-        email,
-        password,
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/user/login`,
+        {
+          email,
+          password,
+        }
+      );
       if (res.status === 200) {
         const { name, email, token } = res.data;
         localStorage.setItem("user", JSON.stringify({ name, email, token }));
-        window.location.href="/";
-
+        window.location.href = "/";
       }
     } catch (error) {
       console.error("Login Error:", error);
@@ -109,7 +111,7 @@ export default function LoginPage() {
 
           <p className="text-center text-sm text-gray-500 mt-4">
             Don't have an account?{" "}
-            <Link to='/signup'  className="text-blue-600 hover:underline">
+            <Link to="/signup" className="text-blue-600 hover:underline">
               Sign Up
             </Link>
           </p>
@@ -118,13 +120,17 @@ export default function LoginPage() {
             <span className="mx-4 text-gray-500">or</span>
             <hr className="flex-grow border-gray-300" />
           </div>
-          <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={() => toast.error("Google Login Failed")}
-              disabled={loading}
-            />
-          </GoogleOAuthProvider>
+          <div className="flex items-center justify-center">
+            <GoogleOAuthProvider
+              clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+            >
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => toast.error("Google Login Failed")}
+                disabled={loading}
+              />
+            </GoogleOAuthProvider>
+          </div>
         </div>
       </div>
     </div>

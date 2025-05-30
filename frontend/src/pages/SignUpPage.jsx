@@ -3,23 +3,25 @@ import { Link } from "react-router-dom";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-  import { toast } from 'react-toastify';
-
+import { toast } from "react-toastify";
 
 export default function SignUpPage() {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleGoogleSuccess = async (response) => {
     setLoading(true);
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/user/google-login`, {
-        credential: response.credential,
-      });
-      if(res.status === 200) {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/user/google-login`,
+        {
+          credential: response.credential,
+        }
+      );
+      if (res.status === 200) {
         const { name, email, token } = res.data;
         localStorage.setItem("user", JSON.stringify({ name, email, token }));
         navigate("/");
@@ -30,18 +32,20 @@ export default function SignUpPage() {
     } finally {
       setLoading(false);
     }
-
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/user/signup`, {
-        name,
-        email,
-        password,
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/user/signup`,
+        {
+          name,
+          email,
+          password,
+        }
+      );
       if (res.status === 200) {
         const { name, email, token } = res.data;
         localStorage.setItem("user", JSON.stringify({ name, email, token }));
@@ -134,13 +138,17 @@ export default function SignUpPage() {
             <span className="mx-4 text-gray-500">or</span>
             <hr className="flex-grow border-gray-300" />
           </div>
-          <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={() => toast.error("Google Login Failed")}
-              disabled={loading}
-            />
-          </GoogleOAuthProvider>
+          <div className="flex items-center justify-center">
+            <GoogleOAuthProvider
+              clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+            >
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => toast.error("Google Login Failed")}
+                disabled={loading}
+              />
+            </GoogleOAuthProvider>
+          </div>
         </div>
       </div>
     </div>

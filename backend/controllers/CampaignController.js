@@ -34,7 +34,7 @@ const createCampaign = async (req, res) => {
 
         // Simulate sending messages to matched customers
         for (const customer of matchedCustomers) {
-            await axios.post(`${API_URL}/api/vendor/send`, {
+            await axios.post(`${process.env.API_URL}/api/vendor/send`, {
                 campaignId: campaign._id,
                 customerName: customer.name,
                 customerEmail: customer.email,

@@ -1,6 +1,7 @@
 const CustomerModel = require('../models/CustomerModel');
 const xlsx = require('xlsx');
 const fs = require('fs');
+const { redisClient } = require('../config/redisClient');
 
 
 // get all customers for a user
@@ -21,17 +22,31 @@ const createCustomer = async (req, res) => {
         if (!name || !email || !phone || !total_spent || !visits || !last_order_date) {
             return res.status(400).json({ error: 'All fields are required' });
         }
-        const customer = await CustomerModel.create({
+        // const customer = await CustomerModel.create({
+        //     name,
+        //     email,
+        //     phone,
+        //     total_spent,
+        //     visits,
+        //     last_order_date,
+        //     uid: req.user._id
+        // });
+        // res.status(201).json(customer);
+
+        const customer = {
             name,
             email,
             phone,
             total_spent,
             visits,
             last_order_date,
-            uid: req.user._id
-        });
-        res.status(201).json(customer);
-
+            uid: req.user._id.toString()
+        }
+        // clear the previous customer data
+        const customerFields = Object.entries(customer).flat();
+        // console.log('Adding customer to stream:', customerFields);
+        await redisClient.xAdd('customer_stream', '*', customerFields);
+        res.status(201).json({ message: 'Customer created successfully', customer });
     } catch (error) {
         console.error('Error creating customer:', error);
         res.status(400).json({ error: 'Bad request' });
@@ -69,7 +84,7 @@ const createMultipleCustomers = async (req, res) => {
             return res.status(400).json({ error: 'No valid customer data found in the file' });
         }
 
-        const customers = await CustomerModel.insertMany(customerdata); 
+        const customers = await CustomerModel.insertMany(customerdata);
         res.status(201).json(customers);
 
     } catch (error) {

@@ -22,16 +22,6 @@ const createCustomer = async (req, res) => {
         if (!name || !email || !phone || !total_spent || !visits || !last_order_date) {
             return res.status(400).json({ error: 'All fields are required' });
         }
-        // const customer = await CustomerModel.create({
-        //     name,
-        //     email,
-        //     phone,
-        //     total_spent,
-        //     visits,
-        //     last_order_date,
-        //     uid: req.user._id
-        // });
-        // res.status(201).json(customer);
 
         const customer = {
             name,
@@ -44,7 +34,6 @@ const createCustomer = async (req, res) => {
         }
         // clear the previous customer data
         const customerFields = Object.entries(customer).flat();
-        // console.log('Adding customer to stream:', customerFields);
         await redisClient.xAdd('customer_stream', '*', customerFields);
         res.status(201).json({ message: 'Customer created successfully', customer });
     } catch (error) {
@@ -70,26 +59,42 @@ const createMultipleCustomers = async (req, res) => {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const data = xlsx.utils.sheet_to_json(worksheet);
+        let customerdata;
+        try {
+            customerdata = data.map(customer => ({
+                name: customer.name,
+                email: customer.email,
+                phone: customer.phone ? customer.phone.toString() : "",
+                total_spent: customer.total_spent.toString(),
+                visits: customer.visits.toString(),
+                last_order_date: excelDateToJSDate(customer.last_order_date),
+                uid: req.user._id.toString()
+            }));
+            // console.log(customerdata);
+            
 
-        const customerdata = data.map(customer => ({
-            name: customer.name,
-            email: customer.email,
-            phone: customer.phone ? customer.phone.toString() : "",
-            total_spent: customer.total_spent,
-            visits: customer.visits,
-            last_order_date: excelDateToJSDate(customer.last_order_date),
-            uid: req.user._id
-        }));
+        } catch (error) {
+            console.error('Error processing customer data:', error);
+            return res.status(400).json({ error: 'Invalid data format in the file' });
+
+        }
+
         if (customerdata.length === 0) {
             return res.status(400).json({ error: 'No valid customer data found in the file' });
         }
 
-        const customers = await CustomerModel.insertMany(customerdata);
-        res.status(201).json(customers);
+        // Push each customer to the stream
+        for (const customer of customerdata) {
+            const customerFields = Object.entries(customer).flat();
+            await redisClient.xAdd('customer_stream', '*', customerFields);
+        }
+
+        // const customers = await CustomerModel.insertMany(customerdata);
+        res.status(201).json({ message: 'Customers created successfully' });
 
     } catch (error) {
         console.error('Error creating multiple customers:', error);
-        res.status(400).json({ error: 'Bad request' });
+        res.status(400).json({ error: ' Error creating customers' });
     }
     finally {
         fs.unlinkSync(req.file.path);

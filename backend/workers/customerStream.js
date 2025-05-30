@@ -26,7 +26,7 @@ const processCustomerStream = async () => {
                             customerData[field] = value;
                         }
                         await CustomerModel.create(customerData);
-                        console.log(`Customer created with ID: ${id} and data:`, customerData);
+                        console.log(`Customer created with ID: ${id}`);
                         lastId = id;
                         await redisClient.set('last_customer_id', lastId);
                         await redisClient.xDel(streamName, id);

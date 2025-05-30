@@ -91,7 +91,7 @@ export default function ViewDataPage() {
       }
     } catch (error) {
       console.error("Error uploading file:", error);
-      toast.error("Error uploading file. Please check your connection.");
+      toast.error( "Error uploading file. Please try again.");
     }
     setFile(null); // Reset file input after upload
   };

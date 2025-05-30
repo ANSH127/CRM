@@ -26,7 +26,7 @@ export default function CampaignDetailPage() {
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://localhost:3000/api/campaign/campaign-records/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/campaign/campaign-records/${id}`,
         {
           headers: {
             "Content-Type": "application/json",

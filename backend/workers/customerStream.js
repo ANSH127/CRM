@@ -25,8 +25,21 @@ const processCustomerStream = async () => {
                             const value = fields[i + 1];
                             customerData[field] = value;
                         }
-                        await CustomerModel.create(customerData);
-                        console.log(`Customer created with ID: ${id}`);
+                        try {
+                            await CustomerModel.create(customerData);
+                            console.log(`Customer created with ID: ${id}`);
+                        } catch (err) {
+                            if (err.code === 11000) {
+                                await CustomerModel.findOneAndUpdate(
+                                    { email: customerData.email, uid: customerData.uid },
+                                    { $set: customerData },
+                                    { new: true }
+                                );
+                                console.log(`Customer with email: ${customerData.email} and uid: ${customerData.uid} updated for ID: ${id}`);
+                            } else {
+                                console.error(`Error creating customer for ID: ${id}`, err);
+                            }
+                        }
                         lastId = id;
                         await redisClient.set('last_customer_id', lastId);
                         await redisClient.xDel(streamName, id);

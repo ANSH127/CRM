@@ -16,7 +16,7 @@ export default function CampaignHistoryPage() {
         return;
       }
 
-      const response = await axios.get("http://localhost:3000/api/campaign/", {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/campaign/`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${

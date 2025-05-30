@@ -11,7 +11,7 @@ const { connectRedis } = require('../config/redisClient');
 const { processBatch } = require('../workers/batchWorker');
 const { processCustomerStream } = require('../workers/customerStream');
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(cors({
     origin: 'http://localhost:5173',

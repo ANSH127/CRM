@@ -14,7 +14,7 @@ const SimulateDelivery = async (req, res) => {
 
     const issent = Math.random() < 0.9;
     const status = issent ? 'sent' : 'failed';
-    await axios.post(`${API_URL}/api/vendor/delivery-response`, {
+    await axios.post(`${process.env.API_URL}/api/vendor/delivery-response`, {
         campaignId,
         customerName,
         customerEmail,

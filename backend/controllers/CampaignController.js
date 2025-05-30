@@ -5,9 +5,9 @@ const axios = require('axios');
 
 
 const createCampaign = async (req, res) => {
-    const { name, description, rules, message } = req.body;
+    const { name, description, rules, message,tag } = req.body;
 
-    if (!name || !description || !rules || !message) {
+    if (!name || !description || !rules || !message || !tag) {
         return res.status(400).json({ error: 'All fields are required' });
     }
 
@@ -25,7 +25,8 @@ const createCampaign = async (req, res) => {
             description,
             rules,
             message,
-            matchedCustomersCount: matchedCustomers.length
+            matchedCustomersCount: matchedCustomers.length,
+            tag
         });
 
         await campaign.save();
@@ -33,7 +34,7 @@ const createCampaign = async (req, res) => {
 
         // Simulate sending messages to matched customers
         for (const customer of matchedCustomers) {
-            await axios.post('http://localhost:3000/api/vendor/send', {
+            await axios.post(`${process.env.API_URL}/api/vendor/send`, {
                 campaignId: campaign._id,
                 customerName: customer.name,
                 customerEmail: customer.email,

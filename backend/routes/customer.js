@@ -3,7 +3,7 @@ const router = express.Router();
 const CustomerController = require('../controllers/CustomerController');
 const requireAuth = require('../middleware/requireAuth');
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const upload =  multer({ storage: multer.memoryStorage() });
 
 
 router.use(requireAuth);

@@ -37,7 +37,7 @@ export default function BasicModal({ open, onClose,fetchData }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/customer/create",
+        `${import.meta.env.VITE_API_URL}/api/customer/create`,
         form,
         {
             headers:{

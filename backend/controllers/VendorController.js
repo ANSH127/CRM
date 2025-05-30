@@ -1,5 +1,6 @@
 const CommunicationLogModel = require('../models/CommunicationLogModel');
 const axios = require('axios');
+const { redisClient } = require('../config/redisClient');
 
 
 
@@ -13,7 +14,7 @@ const SimulateDelivery = async (req, res) => {
 
     const issent = Math.random() < 0.9;
     const status = issent ? 'sent' : 'failed';
-    await axios.post('http://localhost:3000/api/vendor/delivery-response', {
+    await axios.post(`${process.env.API_URL}/api/vendor/delivery-response`, {
         campaignId,
         customerName,
         customerEmail,
@@ -33,22 +34,21 @@ const deliveryResponse = async (req, res) => {
     if (!campaignId || !customerName || !customerEmail || !status) {
         return res.status(400).json({ error: 'All fields are required' });
     }
-
     try {
-        const logEntry = new CommunicationLogModel({
+        const logEntry = {
             campaignId,
             customerName,
             customerEmail,
-            status
-        });
+            status,
+            createdAt: new Date()
+        };
 
-        await logEntry.save();
+        await redisClient.lPush(`delivery_queue`, JSON.stringify(logEntry));
         res.status(201).json({ message: 'Delivery response logged successfully' });
     } catch (error) {
         console.error('Error logging delivery response:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
-
 }
 
 module.exports = {

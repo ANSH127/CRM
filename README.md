@@ -8,6 +8,12 @@ This is a full-stack CRM application that allows users to:
 - Implements consumer-driven batching and pub-sub architecture using Redis
 
 ---
+### ⏱ Time Tracked with WakaTime
+
+[![wakatime](https://wakatime.com/badge/user/660ccb93-e9f4-453a-9f0b-b32ccfa4a93d/project/5966943a-50d5-40c0-b73d-f4d2544c0984.svg)](https://wakatime.com/badge/user/660ccb93-e9f4-453a-9f0b-b32ccfa4a93d/project/5966943a-50d5-40c0-b73d-f4d2544c0984)
+
+
+---
 ## 🔧 Tech Stack
 
 - **Frontend**: React, Tailwind CSS, Material UI

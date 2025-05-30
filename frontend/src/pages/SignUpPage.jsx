@@ -146,6 +146,7 @@ export default function SignUpPage() {
                 onSuccess={handleGoogleSuccess}
                 onError={() => toast.error("Google Login Failed")}
                 disabled={loading}
+                useOneTap
               />
             </GoogleOAuthProvider>
           </div>

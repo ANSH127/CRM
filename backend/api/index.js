@@ -32,21 +32,16 @@ app.use('/api/vendor', VendorRoutes);
 (async () => {
     try {
         await connectRedis();
-
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log("Connected to Redis and MongoDB");
+        processCustomerStream();
+        processBatch();
     } catch (error) {
-        console.error('Error connecting to Redis:', error);
+        console.error('Error connecting to the database:', error);
     }
 }
 )();
 
-mongoose.connect(process.env.MONGO_URI).then(() => {
-    console.log("connected to the database");
-    processBatch(); 
-    processCustomerStream();
-
-}).catch((error) => {
-    console.log("error ", error);
-});
 
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);

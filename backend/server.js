@@ -8,7 +8,7 @@ const CustomerRoutes = require('./routes/customer');
 const CampaignRoutes = require('./routes/campaign');
 const VendorRoutes = require('./routes/vendor');
 const { connectRedis } = require('./config/redisClient');
-
+const { processBatch } = require('./workers/batchWorker');
 
 const port = 3000;
 
@@ -31,6 +31,7 @@ app.use('/api/vendor', VendorRoutes);
 (async () => {
     try {
         await connectRedis();
+
     } catch (error) {
         console.error('Error connecting to Redis:', error);
     }
@@ -39,6 +40,7 @@ app.use('/api/vendor', VendorRoutes);
 
 mongoose.connect(process.env.MONGO_URI).then(() => {
     console.log("connected to the database");
+    processBatch(); 
 
 }).catch((error) => {
     console.log("error ", error);

@@ -69,9 +69,6 @@ const getUserAnalytics = async (req, res) => {
     const userId = req.user._id;
     try {
         const customerCount = await CustomerModel.countDocuments({ uid:userId });
-        if (customerCount === 0) {
-            return res.status(200).json({ customerCount, campaignCount: 0, lastCampaign: null });
-        }
         const campaignCount = await CampaignModel.countDocuments({uid:userId });
         if (campaignCount === 0) {
             return res.status(200).json({ customerCount, campaignCount, lastCampaign: null });

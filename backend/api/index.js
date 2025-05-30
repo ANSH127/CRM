@@ -3,13 +3,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const app = express();
-const UserRoutes = require('./routes/user');
-const CustomerRoutes = require('./routes/customer');
-const CampaignRoutes = require('./routes/campaign');
-const VendorRoutes = require('./routes/vendor');
-const { connectRedis } = require('./config/redisClient');
-const { processBatch } = require('./workers/batchWorker');
-const { processCustomerStream } = require('./workers/customerStream');
+const UserRoutes = require('../routes/user');
+const CustomerRoutes = require('../routes/customer');
+const CampaignRoutes = require('../routes/campaign');
+const VendorRoutes = require('../routes/vendor');
+const { connectRedis } = require('../config/redisClient');
+const { processBatch } = require('../workers/batchWorker');
+const { processCustomerStream } = require('../workers/customerStream');
 
 const port = 3000;
 
@@ -51,3 +51,5 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
 });
+
+module.exports = app; 

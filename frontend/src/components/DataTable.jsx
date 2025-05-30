@@ -17,7 +17,7 @@ export default function DataTable({ columns, rows: initialRows,enableDelete }) {
     if (ids.length === 0) return;
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/customer/delete_multiple",
+        `${import.meta.env.VITE_API_URL}/api/customer/delete_multiple`,
         { ids: ids },
         {
           headers: {

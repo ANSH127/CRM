@@ -46,7 +46,7 @@ export default function CreateCampaignPage() {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:3000/api/campaign/matched-customers-count",
+        `${import.meta.env.VITE_API_URL}/api/campaign/matched-customers-count`,
         { rules: queryData },
         {
           headers: {
@@ -219,7 +219,7 @@ export default function CreateCampaignPage() {
       // console.log("Generated Tag:", tagResponse);
 
       const response = await axios.post(
-        "http://localhost:3000/api/campaign/create",
+        `${import.meta.env.VITE_API_URL}/api/campaign/create`,
         {
           name,
           description,

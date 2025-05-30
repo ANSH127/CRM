@@ -30,7 +30,7 @@ export default function ViewDataPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:3000/api/customer/", {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/customer/`, {
         headers: {
           Authorization: `Bearer ${
             JSON.parse(localStorage.getItem("user")).token
@@ -70,7 +70,7 @@ export default function ViewDataPage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/customer/create_multiple",
+        `${import.meta.env.VITE_API_URL}/api/customer/create_multiple`,
         formData,
         {
           headers: {

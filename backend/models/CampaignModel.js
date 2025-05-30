@@ -33,6 +33,12 @@ const campaignSchema = new mongoose.Schema({
     matchedCustomersCount: {
         type: Number,
         default: 0
+    },
+    tag: {
+        type: String,
+        required: true,
+        trim: true,
+        default: 'general'
     }
 })
 

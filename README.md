@@ -173,11 +173,6 @@ cd frontend && npm run dev
 
 ---
 
-## 📽 Demo Video
-
-[Watch here →](https://your-demo-video-link.com)
-
----
 
 ## 🧹 Known Limitations
 

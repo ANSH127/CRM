@@ -1,16 +1,17 @@
 const { redisClient } = require('../config/redisClient');
 const CustomerModel = require('../models/CustomerModel');
 
+const BATCH_SIZE = 20; 
+
 const processCustomerStream = async () => {
     try {
-        // clear the previous customer data
         const streamName = 'customer_stream';
         let lastId = await redisClient.get('last_customer_id') || '0-0';
+        let batch = [];
+        let batchIds = [];
 
         while (true) {
-
-            const entries = await redisClient.xRead({ key: streamName, id: lastId }, { count: 10, block: 0 });
-
+            const entries = await redisClient.xRead({ key: streamName, id: lastId }, { count: 20, block: 0 });
 
             if (entries && entries.length > 0) {
                 for (const st of entries) {
@@ -25,31 +26,47 @@ const processCustomerStream = async () => {
                             const value = fields[i + 1];
                             customerData[field] = value;
                         }
-                        try {
-                            await CustomerModel.create(customerData);
-                            console.log(`Customer created with ID: ${id}`);
-                        } catch (err) {
-                            if (err.code === 11000) {
-                                await CustomerModel.findOneAndUpdate(
-                                    { email: customerData.email, uid: customerData.uid },
-                                    { $set: customerData },
-                                    { new: true }
-                                );
-                                console.log(`Customer with email: ${customerData.email} and uid: ${customerData.uid} updated for ID: ${id}`);
-                            } else {
-                                console.error(`Error creating customer for ID: ${id}`, err);
+                        batch.push(customerData);
+                        batchIds.push(id);
+
+                        if (batch.length >= BATCH_SIZE) {
+                            await insertBatch(batch);
+                            for (const delId of batchIds) {
+                                await redisClient.xDel(streamName, delId);
                             }
+                            batch = [];
+                            batchIds = [];
                         }
                         lastId = id;
-                        await redisClient.set('last_customer_id', lastId);
-                        await redisClient.xDel(streamName, id);
-
                     }
                 }
+                if (batch.length > 0) {
+                    await insertBatch(batch);
+                    for (const delId of batchIds) {
+                        await redisClient.xDel(streamName, delId);
+                    }
+                    batch = [];
+                    batchIds = [];
+                }
+                await redisClient.set('last_customer_id', lastId);
             }
         }
     } catch (error) {
         console.error('Error processing customer stream:', error);
     }
+};
+
+async function insertBatch(batch) {
+    try {
+        await CustomerModel.insertMany(batch, { ordered: false });
+        console.log(`Batch inserted: ${batch.length} customers`);
+    } catch (err) {
+        if (err.code === 11000 || err.writeErrors) {
+            console.warn('Duplicate key error(s) occurred. Skipping duplicates.');
+        } else {
+            console.error('Error inserting batch:', err);
+        }
+    }
 }
+
 module.exports = { processCustomerStream };

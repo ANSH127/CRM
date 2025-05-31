@@ -26,6 +26,7 @@ export default function ViewDataPage() {
   const [rows, setRows] = React.useState([]);
   const [file, setFile] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
+  const [loading2, setLoading2] = React.useState(false);
 
   const fetchData = async () => {
     try {
@@ -69,6 +70,7 @@ export default function ViewDataPage() {
     formData.append("file", file);
 
     try {
+      setLoading2(true);
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/customer/create_multiple`,
         formData,
@@ -83,7 +85,7 @@ export default function ViewDataPage() {
       );
 
       if (response.status === 201) {
-        alert("File uploaded successfully!");
+        toast.success("File uploaded successfully!");
         fetchData(); // Refresh data after upload
       } else {
         console.error("Failed to upload file:", response.statusText);
@@ -93,7 +95,10 @@ export default function ViewDataPage() {
       console.error("Error uploading file:", error);
       toast.error( "Error uploading file. Please try again.");
     }
-    setFile(null); // Reset file input after upload
+    finally {
+      setLoading2(false);
+      setFile(null); // Reset file input after upload
+    }
   };
 
   React.useEffect(() => {
@@ -148,8 +153,9 @@ export default function ViewDataPage() {
           <button
             className="bg-green-500 text-white px-5 py-2 rounded-lg shadow hover:bg-green-600 transition ml-2"
             onClick={handleFileUpload}
+            disabled={!file || loading2}
           >
-            Upload
+            {loading2 ? "Uploading..." : "Upload File"}
           </button>
         </div>
         <BasicModal

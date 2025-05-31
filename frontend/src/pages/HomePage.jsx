@@ -116,7 +116,7 @@ export default function HomePage() {
             className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg shadow transition cursor-pointer"
             onClick={() => {
               data?.customerCount < 1
-                ? alert("Please upload customers first.")
+                ? toast.error("Please upload customers first")
                 : navigate("/create-campaign");
             }}
           >

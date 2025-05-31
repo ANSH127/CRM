@@ -29,7 +29,7 @@ const pages = [
     enable: isloggedin,
   },
   {
-    label: "⍈ Logout",
+    label: "Logout",
     path: "/login",
     enable: isloggedin,
   },
@@ -105,7 +105,7 @@ function ResponsiveAppBar() {
                     hidden={page.enable ? false : true}
                   >
                     <Typography textAlign="center" sx={{ color: "black" }}>
-                      {page.label}
+                      ⍈ {page.label}
                     </Typography>
                   </MenuItem>
                 ) : (
@@ -160,7 +160,7 @@ function ResponsiveAppBar() {
                   }}
                   hidden={page.enable ? false : true}
                 >
-                  {page.label}
+                  ⍈ {page.label}
                 </button>
               ) : (
                 page.enable && (

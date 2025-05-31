@@ -2,8 +2,7 @@ import React from "react";
 import DataTable from "../components/DataTable";
 import BasicModal from "../components/Modal";
 import axios from "axios";
-  import { toast } from 'react-toastify';
-
+import { toast } from "react-toastify";
 
 export default function ViewDataPage() {
   // Define columns for DataGrid
@@ -31,13 +30,16 @@ export default function ViewDataPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/customer/`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("user")).token
-          }`,
-        },
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/customer/`,
+        {
+          headers: {
+            Authorization: `Bearer ${
+              JSON.parse(localStorage.getItem("user")).token
+            }`,
+          },
+        }
+      );
       if (response.status === 200) {
         // console.log("Data fetched successfully:", response.data);
 
@@ -49,8 +51,7 @@ export default function ViewDataPage() {
     } catch (error) {
       toast.error("Error fetching data. Please check your connection.");
       console.error("Error fetching data:", error);
-    }
-    finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -62,7 +63,9 @@ export default function ViewDataPage() {
     }
     // file size limit check
     if (file.size > 100 * 1024) {
-      toast.warning("File size exceeds 100KB limit. Please select a smaller file.");
+      toast.warning(
+        "File size exceeds 100KB limit. Please select a smaller file."
+      );
       return;
     }
 
@@ -85,7 +88,9 @@ export default function ViewDataPage() {
       );
 
       if (response.status === 201) {
-        toast.success("File uploaded successfully!");
+        toast.success(
+          "File uploaded successfully data updating in progress..."
+        );
         fetchData(); // Refresh data after upload
       } else {
         console.error("Failed to upload file:", response.statusText);
@@ -93,9 +98,8 @@ export default function ViewDataPage() {
       }
     } catch (error) {
       console.error("Error uploading file:", error);
-      toast.error( "Error uploading file. Please try again.");
-    }
-    finally {
+      toast.error("Error uploading file. Please try again.");
+    } finally {
       setLoading2(false);
       setFile(null); // Reset file input after upload
     }
@@ -108,6 +112,13 @@ export default function ViewDataPage() {
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4 text-center">Add/View Data</h2>
+      <div className="mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded text-yellow-800 text-sm">
+        <strong>Note:</strong> The Excel/CSV file must have columns in this
+        order: <br />
+        <span className="font-mono">
+          name, email, phone, total_spent, visits, last_order_date
+        </span>
+      </div>
       <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
         <button
           className="bg-blue-500 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-600 transition"
@@ -164,9 +175,11 @@ export default function ViewDataPage() {
           fetchData={fetchData}
         />
       </div>
-      {
-        loading ? <div className="text-center text-gray-500">Loading...</div> :
-        <DataTable columns={columns} rows={rows} enableDelete={true} />}
+      {loading ? (
+        <div className="text-center text-gray-500">Loading...</div>
+      ) : (
+        <DataTable columns={columns} rows={rows} enableDelete={true} />
+      )}
     </div>
   );
 }

@@ -1,12 +1,9 @@
 import React from "react";
 import DataTable from "../components/DataTable";
 import BasicModal from "../components/Modal";
-import { FileUploader } from "react-drag-drop-files";
-
 import axios from "axios";
-import { toast } from "react-toastify";
+  import { toast } from 'react-toastify';
 
-const fileTypes = ["XLSX", "XLS"];
 
 export default function ViewDataPage() {
   // Define columns for DataGrid
@@ -34,16 +31,13 @@ export default function ViewDataPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/customer/`,
-        {
-          headers: {
-            Authorization: `Bearer ${
-              JSON.parse(localStorage.getItem("user")).token
-            }`,
-          },
-        }
-      );
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/customer/`, {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("user")).token
+          }`,
+        },
+      });
       if (response.status === 200) {
         // console.log("Data fetched successfully:", response.data);
 
@@ -55,7 +49,8 @@ export default function ViewDataPage() {
     } catch (error) {
       toast.error("Error fetching data. Please check your connection.");
       console.error("Error fetching data:", error);
-    } finally {
+    }
+    finally{
       setLoading(false);
     }
   };
@@ -67,9 +62,7 @@ export default function ViewDataPage() {
     }
     // file size limit check
     if (file.size > 100 * 1024) {
-      toast.warning(
-        "File size exceeds 100KB limit. Please select a smaller file."
-      );
+      toast.warning("File size exceeds 100KB limit. Please select a smaller file.");
       return;
     }
 
@@ -100,8 +93,9 @@ export default function ViewDataPage() {
       }
     } catch (error) {
       console.error("Error uploading file:", error);
-      toast.error("Error uploading file. Please try again.");
-    } finally {
+      toast.error( "Error uploading file. Please try again.");
+    }
+    finally {
       setLoading2(false);
       setFile(null); // Reset file input after upload
     }
@@ -122,19 +116,37 @@ export default function ViewDataPage() {
           Add Data
         </button>
         <div className="flex items-center gap-2">
-          <FileUploader
-            handleChange={setFile}
-            name="file"
-            types={fileTypes}
-            maxSize={1}
+          <label
+            htmlFor="fileInput"
+            className="flex items-center cursor-pointer bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-200 transition"
           >
-            <button
-              type="button"
-              className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-lg shadow hover:bg-gray-200 transition"
+            <svg
+              className="w-5 h-5 mr-2 text-blue-500"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
             >
-              {file ? "Change File" : "Choose File"}
-            </button>
-          </FileUploader>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12"
+              />
+            </svg>
+            <span className="font-medium text-gray-700">Choose File</span>
+            <input
+              type="file"
+              id="fileInput"
+              className="hidden"
+              accept=".xlsx, .xls"
+              onChange={(e) => {
+                const selectedFile = e.target.files[0];
+                if (selectedFile) {
+                  setFile(selectedFile);
+                }
+              }}
+            />
+          </label>
           <span className="ml-2 text-sm text-gray-600">
             {file ? file.name : "No file chosen"}
           </span>
@@ -152,11 +164,9 @@ export default function ViewDataPage() {
           fetchData={fetchData}
         />
       </div>
-      {loading ? (
-        <div className="text-center text-gray-500">Loading...</div>
-      ) : (
-        <DataTable columns={columns} rows={rows} enableDelete={true} />
-      )}
+      {
+        loading ? <div className="text-center text-gray-500">Loading...</div> :
+        <DataTable columns={columns} rows={rows} enableDelete={true} />}
     </div>
   );
 }

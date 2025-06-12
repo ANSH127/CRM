@@ -6,20 +6,16 @@ import { toast } from "react-toastify";
 
 export default function ViewDataPage() {
   // Define columns for DataGrid
-  const columns = [
-    { field: "_id", headerName: "ID", width: 90 },
-    { field: "name", headerName: "Name", width: 150 },
-    { field: "email", headerName: "Email", width: 200 },
-    { field: "phone", headerName: "Phone", width: 140 },
-    {
-      field: "total_spent",
-      headerName: "Total Spent",
-      width: 130,
-      type: "number",
-    },
-    { field: "visits", headerName: "Visits", width: 100, type: "number" },
-    { field: "last_order_date", headerName: "Last Order Date", width: 200 },
-  ];
+  const defaultColumns = [
+  { field: "_id", headerName: "ID", width: 90 },
+  { field: "name", headerName: "Name", width: 150 },
+  { field: "email", headerName: "Email", width: 200 },
+  { field: "phone", headerName: "Phone", width: 140 },
+  { field: "total_spent", headerName: "Total Spent", width: 130, type: "number" },
+  { field: "visits", headerName: "Visits", width: 100, type: "number" },
+  { field: "last_order_date", headerName: "Last Order Date", width: 200 },
+];
+  const [columns, setColumns] = React.useState(defaultColumns);
 
   const [open, setOpen] = React.useState(false);
   const [rows, setRows] = React.useState([]);
@@ -105,7 +101,39 @@ export default function ViewDataPage() {
     }
   };
 
+  const fetchCustomFields = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/customfield/`,
+        {
+          headers: {
+            Authorization: `Bearer ${
+              JSON.parse(localStorage.getItem("user")).token
+            }`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        const customFields = response.data;
+        if (customFields && customFields.length > 0) {
+          const customColumns = customFields.map((field) => ({
+            field: field.name,
+            headerName: field.label,
+            width: 150,
+          }));
+          setColumns([...defaultColumns, ...customColumns]);
+
+        }
+      } else {
+        console.error("Failed to fetch custom fields:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching custom fields:", error);
+    }
+  }
+
   React.useEffect(() => {
+    fetchCustomFields();
     fetchData();
   }, []);
 

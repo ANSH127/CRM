@@ -10,6 +10,7 @@ const VendorRoutes = require('../routes/vendor');
 const { connectRedis } = require('../config/redisClient');
 const { processBatch } = require('../workers/batchWorker');
 const { processCustomerStream } = require('../workers/customerStream');
+const customFieldRoutes = require('../routes/customfield');
 
 const port = process.env.PORT || 3000;
 
@@ -21,6 +22,7 @@ app.use('/api/user', UserRoutes);
 app.use('/api/customer', CustomerRoutes);
 app.use('/api/campaign', CampaignRoutes);
 app.use('/api/vendor', VendorRoutes);
+app.use('/api/customfield', customFieldRoutes);
 
 
 // connect to the database

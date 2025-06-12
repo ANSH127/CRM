@@ -30,10 +30,12 @@ const customerSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
+    customFields: { type: Object, default: {} },
+
 }, {
     timestamps: true,
 });
 
-customerSchema.index({email: 1, uid: 1}, {unique: true});
+customerSchema.index({ email: 1, uid: 1 }, { unique: true });
 const Customer = mongoose.model('Customer', customerSchema);
 module.exports = Customer;

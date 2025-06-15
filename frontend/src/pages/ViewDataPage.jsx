@@ -7,21 +7,27 @@ import { toast } from "react-toastify";
 export default function ViewDataPage() {
   // Define columns for DataGrid
   const defaultColumns = [
-  { field: "_id", headerName: "ID", width: 90 },
-  { field: "name", headerName: "Name", width: 150 },
-  { field: "email", headerName: "Email", width: 200 },
-  { field: "phone", headerName: "Phone", width: 140 },
-  { field: "total_spent", headerName: "Total Spent", width: 130, type: "number" },
-  { field: "visits", headerName: "Visits", width: 100, type: "number" },
-  { field: "last_order_date", headerName: "Last Order Date", width: 200 },
-];
-  const [columns, setColumns] = React.useState(defaultColumns);
+    { field: "_id", headerName: "ID", width: 90 },
+    { field: "name", headerName: "Name", width: 150 },
+    { field: "email", headerName: "Email", width: 200 },
+    { field: "phone", headerName: "Phone", width: 140 },
+    {
+      field: "total_spent",
+      headerName: "Total Spent",
+      width: 130,
+      type: "number",
+    },
+    { field: "visits", headerName: "Visits", width: 100, type: "number" },
+    { field: "last_order_date", headerName: "Last Order Date", width: 200 },
+  ];
 
+  const [columns, setColumns] = React.useState(defaultColumns);
   const [open, setOpen] = React.useState(false);
   const [rows, setRows] = React.useState([]);
   const [file, setFile] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   const [loading2, setLoading2] = React.useState(false);
+  const [customFields, setCustomFields] = React.useState([]);
 
   const fetchData = async () => {
     try {
@@ -67,6 +73,7 @@ export default function ViewDataPage() {
 
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("customFields", JSON.stringify(customFields));
 
     try {
       setLoading2(true);
@@ -115,6 +122,7 @@ export default function ViewDataPage() {
       );
       if (response.status === 200) {
         const customFields = response.data;
+        setCustomFields(customFields);
         if (customFields && customFields.length > 0) {
           const customColumns = customFields.map((field) => ({
             field: field.name,
@@ -122,7 +130,6 @@ export default function ViewDataPage() {
             width: 150,
           }));
           setColumns([...defaultColumns, ...customColumns]);
-
         }
       } else {
         console.error("Failed to fetch custom fields:", response.statusText);
@@ -130,12 +137,12 @@ export default function ViewDataPage() {
     } catch (error) {
       console.error("Error fetching custom fields:", error);
     }
-  }
+  };
   const flattenRows = (rows) =>
-  rows.map((row) => ({
-    ...row,
-    ...(row.customFields || {}),
-  }));
+    rows.map((row) => ({
+      ...row,
+      ...(row.customFields || {}),
+    }));
 
   React.useEffect(() => {
     fetchCustomFields();
@@ -150,6 +157,9 @@ export default function ViewDataPage() {
         order: <br />
         <span className="font-mono">
           name, email, phone, total_spent, visits, last_order_date
+          {customFields.length > 0
+            ? `, ${customFields.map((field) => `custom_${field.name}`).join(", ")}`
+            : ""}
         </span>
       </div>
       <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
@@ -211,7 +221,11 @@ export default function ViewDataPage() {
       {loading ? (
         <div className="text-center text-gray-500">Loading...</div>
       ) : (
-        <DataTable columns={columns} rows={flattenRows(rows)} enableDelete={true} />
+        <DataTable
+          columns={columns}
+          rows={flattenRows(rows)}
+          enableDelete={true}
+        />
       )}
     </div>
   );

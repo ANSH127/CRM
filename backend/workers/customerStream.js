@@ -28,7 +28,15 @@ const processCustomerStream = async () => {
                             const value = fields[i + 1];
                             if (field.startsWith("customFields_")) {
                                 const cfKey = field.replace("customFields_", "");
-                                customFieldsObj[cfKey] = value;
+                                let v = value;
+                                if (!isNaN(v) && v.trim() !== "") {
+                                    v = Number(v);
+                                } else if (!isNaN(Date.parse(v))) {
+                                    const d = new Date(v);
+                                    if (!isNaN(d.getTime())) v = d;
+                                }
+                                customFieldsObj[cfKey] = v;
+
                             } else {
                                 customerData[field] = value;
                             }

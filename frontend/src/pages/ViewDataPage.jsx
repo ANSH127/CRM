@@ -37,7 +37,7 @@ export default function ViewDataPage() {
         }
       );
       if (response.status === 200) {
-        // console.log("Data fetched successfully:", response.data);
+        console.log("Data fetched successfully:", response.data);
 
         setRows(response.data);
       } else {
@@ -131,6 +131,11 @@ export default function ViewDataPage() {
       console.error("Error fetching custom fields:", error);
     }
   }
+  const flattenRows = (rows) =>
+  rows.map((row) => ({
+    ...row,
+    ...(row.customFields || {}),
+  }));
 
   React.useEffect(() => {
     fetchCustomFields();
@@ -206,7 +211,7 @@ export default function ViewDataPage() {
       {loading ? (
         <div className="text-center text-gray-500">Loading...</div>
       ) : (
-        <DataTable columns={columns} rows={rows} enableDelete={true} />
+        <DataTable columns={columns} rows={flattenRows(rows)} enableDelete={true} />
       )}
     </div>
   );

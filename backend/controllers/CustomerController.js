@@ -16,7 +16,7 @@ const getCustomers = async (req, res) => {
 
 // create a new customer one
 const createCustomer = async (req, res) => {
-    const { name, email, phone, total_spent, visits, last_order_date } = req.body;
+    const { name, email, phone, total_spent, visits, last_order_date, customFields } = req.body;
     try {
         if (!name || !email || !phone || !total_spent || !visits || !last_order_date) {
             return res.status(400).json({ error: 'All fields are required' });
@@ -29,10 +29,19 @@ const createCustomer = async (req, res) => {
             total_spent,
             visits,
             last_order_date,
-            uid: req.user._id.toString()
-        }
-        // clear the previous customer data
-        const customerFields = Object.entries(customer).flat();
+            uid: req.user._id.toString(),
+            customFields: customFields || {} // <-- Add this line
+        };
+
+        // Flatten customer fields for Redis stream
+        const customerFields = Object.entries(customer).flatMap(([key, value]) => {
+            if (key === "customFields" && typeof value === "object" && value !== null) {
+                // Flatten customFields as key:value pairs (e.g., customFields_fieldName: value)
+                return Object.entries(value).map(([cfKey, cfValue]) => [`customFields_${cfKey}`, cfValue]).flat();
+            }
+            return [key, value];
+        });
+
         await redisClient.xAdd('customer_stream', '*', customerFields);
         res.status(201).json({ message: 'Customer created successfully', customer });
     } catch (error) {

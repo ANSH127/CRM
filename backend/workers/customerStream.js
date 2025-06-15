@@ -1,7 +1,7 @@
 const { redisClient } = require('../config/redisClient');
 const CustomerModel = require('../models/CustomerModel');
 
-const BATCH_SIZE = 20; 
+const BATCH_SIZE = 20;
 
 const processCustomerStream = async () => {
     try {
@@ -20,11 +20,21 @@ const processCustomerStream = async () => {
                         const fields = msg.message;
 
                         let customerData = {};
+                        let customFieldsObj = {};
+
                         const keys = Object.keys(fields);
                         for (let i = 0; i < keys.length; i += 2) {
                             const field = fields[i];
                             const value = fields[i + 1];
-                            customerData[field] = value;
+                            if (field.startsWith("customFields_")) {
+                                const cfKey = field.replace("customFields_", "");
+                                customFieldsObj[cfKey] = value;
+                            } else {
+                                customerData[field] = value;
+                            }
+                        }
+                        if (Object.keys(customFieldsObj).length > 0) {
+                            customerData.customFields = customFieldsObj;
                         }
                         batch.push(customerData);
                         batchIds.push(id);

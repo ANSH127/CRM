@@ -197,17 +197,7 @@ export default function CustomFieldPage() {
           <option value="number">Number</option>
           <option value="date">Date</option>
         </select>
-        <label className="flex items-center space-x-1 mb-2">
-          <input
-            type="checkbox"
-            checked={newField.required}
-            onChange={(e) =>
-              setNewField({ ...newField, required: e.target.checked })
-            }
-            className="accent-blue-500"
-          />
-          <span className="text-sm">Required</span>
-        </label>
+    
         <button
           onClick={handleAddField}
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -222,7 +212,6 @@ export default function CustomFieldPage() {
               <th className="py-2 px-3 border-b">Name</th>
               <th className="py-2 px-3 border-b">Label</th>
               <th className="py-2 px-3 border-b">Type</th>
-              <th className="py-2 px-3 border-b">Required</th>
               <th className="py-2 px-3 border-b">Remove</th>
             </tr>
           </thead>
@@ -259,16 +248,6 @@ export default function CustomFieldPage() {
                     <option value="number">Number</option>
                     <option value="date">Date</option>
                   </select>
-                </td>
-                <td className="py-2 px-3 border-b text-center">
-                  <input
-                    type="checkbox"
-                    checked={field.required}
-                    onChange={(e) =>
-                      handleFieldChange(idx, "required", e.target.checked)
-                    }
-                    className="accent-blue-500"
-                  />
                 </td>
                 <td className="py-2 px-3 border-b text-center">
                   <button

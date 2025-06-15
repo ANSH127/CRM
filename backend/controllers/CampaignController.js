@@ -5,13 +5,16 @@ const axios = require('axios');
 
 
 const createCampaign = async (req, res) => {
-    const { name, description, rules, message,tag } = req.body;
+    let { name, description, rules, message,tag } = req.body;
 
     if (!name || !description || !rules || !message || !tag) {
         return res.status(400).json({ error: 'All fields are required' });
     }
 
+    
     try {
+        rules=transformCustomRules(rules);
+        rules = convertCustomFieldTypes(rules);
          const filter = { $and: [rules, { uid: req.user._id }] };
 
         const matchedCustomers = await CustomerModel.find(filter);
@@ -51,10 +54,62 @@ const createCampaign = async (req, res) => {
 
 }
 
-
+function transformCustomRules(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map(transformCustomRules);
+  } else if (typeof obj === 'object' && obj !== null) {
+    const newObj = {};
+    for (const key in obj) {
+      if (key.startsWith('custom_')) {
+        // Replace custom_ prefix with customFields.
+        newObj[`customFields.${key.replace('custom_', '')}`] = transformCustomRules(obj[key]);
+      } else if (key === '$and' || key === '$or' || key === '$nor') {
+        // Recursively transform logical operators
+        newObj[key] = obj[key].map(transformCustomRules);
+      } else {
+        newObj[key] = transformCustomRules(obj[key]);
+      }
+    }
+    return newObj;
+  }
+  return obj;
+}
+function convertCustomFieldTypes(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map(convertCustomFieldTypes);
+  } else if (typeof obj === 'object' && obj !== null) {
+    const newObj = {};
+    for (const key in obj) {
+      // Only check leaf nodes (values)
+      if (typeof obj[key] === 'string') {
+        // Try to convert to number
+        if (!isNaN(obj[key]) && obj[key].trim() !== '') {
+          newObj[key] = Number(obj[key]);
+        }
+        // Try to convert to date
+        else if (!isNaN(Date.parse(obj[key]))) {
+          const d = new Date(obj[key]);
+          if (!isNaN(d.getTime())) newObj[key] = d;
+          else newObj[key] = obj[key];
+        } else {
+          newObj[key] = obj[key];
+        }
+      } else {
+        newObj[key] = convertCustomFieldTypes(obj[key]);
+      }
+    }
+    return newObj;
+  }
+  return obj;
+}
 const getMatchedCustomersCount = async (req, res) => {
-    const { rules } = req.body;
+    let { rules } = req.body;
+    // console.log('rules:', rules);
+    
     try {
+        rules=transformCustomRules(rules);
+        rules = convertCustomFieldTypes(rules);
+        // console.log('Transformed rules:', rules);
         const filter = { $and: [rules, { uid: req.user._id }] };
 
         const customers = await CustomerModel.find(filter);

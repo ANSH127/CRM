@@ -3,6 +3,7 @@ import DataTable from "../components/DataTable";
 import BasicModal from "../components/Modal";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function ViewDataPage() {
   // Define columns for DataGrid
@@ -28,6 +29,7 @@ export default function ViewDataPage() {
   const [loading, setLoading] = React.useState(false);
   const [loading2, setLoading2] = React.useState(false);
   const [customFields, setCustomFields] = React.useState([]);
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
@@ -152,16 +154,28 @@ export default function ViewDataPage() {
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4 text-center">Add/View Data</h2>
-      <div className="mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded text-yellow-800 text-sm">
-        <strong>Note:</strong> The Excel/CSV file must have columns in this
-        order: <br />
-        <span className="font-mono">
-          name, email, phone, total_spent, visits, last_order_date
-          {customFields.length > 0
-            ? `, ${customFields.map((field) => `custom_${field.name}`).join(", ")}`
-            : ""}
-        </span>
+      <div className="mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded text-yellow-800 text-sm flex items-center justify-between">
+        <div>
+          <strong>Note:</strong> The Excel/CSV file must have columns in this
+          order: <br />
+          <span className="font-mono">
+            name, email, phone, total_spent, visits, last_order_date
+            {customFields.length > 0
+              ? `, ${customFields
+                  .map((field) => `custom_${field.name}`)
+                  .join(", ")}`
+              : ""}
+          </span>
+        </div>
+        <button
+          className="ml-4 text-blue-600 underline text-sm hover:text-blue-800"
+          onClick={() => navigate("/custom-fields")}
+          type="button"
+        >
+          Customize Fields
+        </button>
       </div>
+
       <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
         <button
           className="bg-blue-500 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-600 transition"

@@ -16,7 +16,7 @@ const getCustomers = async (req, res) => {
 
 // create a new customer one
 const createCustomer = async (req, res) => {
-    const { name, email, phone, total_spent, visits, last_order_date } = req.body;
+    const { name, email, phone, total_spent, visits, last_order_date, customFields } = req.body;
     try {
         if (!name || !email || !phone || !total_spent || !visits || !last_order_date) {
             return res.status(400).json({ error: 'All fields are required' });
@@ -29,10 +29,19 @@ const createCustomer = async (req, res) => {
             total_spent,
             visits,
             last_order_date,
-            uid: req.user._id.toString()
-        }
-        // clear the previous customer data
-        const customerFields = Object.entries(customer).flat();
+            uid: req.user._id.toString(),
+            customFields: customFields || {} // <-- Add this line
+        };
+
+        // Flatten customer fields for Redis stream
+        const customerFields = Object.entries(customer).flatMap(([key, value]) => {
+            if (key === "customFields" && typeof value === "object" && value !== null) {
+                // Flatten customFields as key:value pairs (e.g., customFields_fieldName: value)
+                return Object.entries(value).map(([cfKey, cfValue]) => [`customFields_${cfKey}`, cfValue]).flat();
+            }
+            return [key, value];
+        });
+
         await redisClient.xAdd('customer_stream', '*', customerFields);
         res.status(201).json({ message: 'Customer created successfully', customer });
     } catch (error) {
@@ -60,18 +69,28 @@ const createMultipleCustomers = async (req, res) => {
         const data = xlsx.utils.sheet_to_json(worksheet);
         let customerdata;
         try {
-            customerdata = data.map(customer => ({
-                name: customer.name,
-                email: customer.email,
-                phone: customer.phone ? customer.phone.toString() : "",
-                total_spent: customer.total_spent.toString(),
-                visits: customer.visits.toString(),
-                last_order_date: excelDateToJSDate(customer.last_order_date),
-                uid: req.user._id.toString()
-            }));
-            // console.log(customerdata);
-            
+            customerdata = data.map(customer => {
+                // Extract custom fields (keys starting with "custom_")
+                const customFields = {};
+                Object.keys(customer).forEach(key => {
+                    if (key.startsWith("custom_")) {
+                        const cfKey = key.replace("custom_", "");
+                        customFields[cfKey] = customer[key].toString();
+                    }
+                });
 
+                return {
+                    name: customer.name,
+                    email: customer.email,
+                    phone: customer.phone ? customer.phone.toString() : "",
+                    total_spent: customer.total_spent?.toString() || "0",
+                    visits: customer.visits?.toString() || "0",
+                    last_order_date: excelDateToJSDate(customer.last_order_date),
+                    uid: req.user._id.toString(),
+                    customFields 
+                };
+            });
+            console.log(customerdata);
         } catch (error) {
             console.error('Error processing customer data:', error);
             return res.status(400).json({ error: 'Invalid data format in the file' });
@@ -81,10 +100,13 @@ const createMultipleCustomers = async (req, res) => {
         if (customerdata.length === 0) {
             return res.status(400).json({ error: 'No valid customer data found in the file' });
         }
-
-        // Push each customer to the stream
         for (const customer of customerdata) {
-            const customerFields = Object.entries(customer).flat();
+            const customerFields = Object.entries(customer).flatMap(([key, value]) => {
+                if (key === "customFields" && typeof value === "object" && value !== null) {
+                    return Object.entries(value).map(([cfKey, cfValue]) => [`customFields_${cfKey}`, cfValue]).flat();
+                }
+                return [key, value];
+            });
             await redisClient.xAdd('customer_stream', '*', customerFields);
         }
 

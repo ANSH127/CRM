@@ -9,7 +9,7 @@ import { initializeChat, fetchModelResponse } from "../config/AI";
 import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
 
-const fields = [
+const myfields = [
   { name: "total_spent", label: "Total Spent" },
   { name: "visits", label: "Visits" },
   { name: "last_order_date", label: "Last Order Date" },
@@ -20,6 +20,8 @@ export default function CreateCampaignPage() {
     combinator: "or",
     rules: [],
   });
+
+  const [fields, setFields] = React.useState(myfields);
   const [loading, setLoading] = React.useState(false);
   const [loading2, setLoading2] = React.useState(false);
   const [loading3, setLoading3] = React.useState(false);
@@ -30,6 +32,7 @@ export default function CreateCampaignPage() {
   const navigate = useNavigate();
   const [toggleaiquery, setToggleAIQuery] = React.useState(false);
   const [aiQuery, setAIQuery] = React.useState("");
+  const [customFields, setCustomFields] = React.useState([]);
 
   const fetchAudienceCount = async () => {
     var queryData;
@@ -42,6 +45,8 @@ export default function CreateCampaignPage() {
       toast.warning("Please define rules to fetch audience count.");
       return;
     }
+    console.log("Fetching audience count with query:", queryData);
+    
     
     try {
       setLoading(true);
@@ -138,6 +143,7 @@ export default function CreateCampaignPage() {
               - total_spent (number, in INR)
               - visits (number)
               - last_order_date (date in YYYY-MM-DD)
+              - My Custom fields (${customFields.map(field => `custom_${field.name} (string, number, or date)`).join(", ")})
 
               🔧 Allowed Operators:
               - $gt, $lt, $gte, $lte, $eq
@@ -254,8 +260,43 @@ export default function CreateCampaignPage() {
     }
   };
 
+  const fetchCustomFields = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/customfield/`,
+          {
+            headers: {
+              Authorization: `Bearer ${
+                JSON.parse(localStorage.getItem("user")).token
+              }`,
+            },
+          }
+        );
+        if (response.status === 200) {
+          const customFields = response.data;
+          setFields((prevFields) => [
+            ...prevFields,
+            ...customFields.map((field) => ({
+              name: `custom_${field.name}`,
+              label: field.label,
+            })),
+          ]);
+          setCustomFields(customFields);
+          
+          
+        } else {
+          console.error("Failed to fetch custom fields:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching custom fields:", error);
+      }
+    };
+
+
+
   React.useEffect(() => {
     initializeChat([]);
+    fetchCustomFields();
   }, []);
 
   return (

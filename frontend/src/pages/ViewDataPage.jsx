@@ -3,10 +3,11 @@ import DataTable from "../components/DataTable";
 import BasicModal from "../components/Modal";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function ViewDataPage() {
   // Define columns for DataGrid
-  const columns = [
+  const defaultColumns = [
     { field: "_id", headerName: "ID", width: 90 },
     { field: "name", headerName: "Name", width: 150 },
     { field: "email", headerName: "Email", width: 200 },
@@ -21,11 +22,14 @@ export default function ViewDataPage() {
     { field: "last_order_date", headerName: "Last Order Date", width: 200 },
   ];
 
+  const [columns, setColumns] = React.useState(defaultColumns);
   const [open, setOpen] = React.useState(false);
   const [rows, setRows] = React.useState([]);
   const [file, setFile] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   const [loading2, setLoading2] = React.useState(false);
+  const [customFields, setCustomFields] = React.useState([]);
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
@@ -41,7 +45,7 @@ export default function ViewDataPage() {
         }
       );
       if (response.status === 200) {
-        // console.log("Data fetched successfully:", response.data);
+        console.log("Data fetched successfully:", response.data);
 
         setRows(response.data);
       } else {
@@ -71,6 +75,7 @@ export default function ViewDataPage() {
 
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("customFields", JSON.stringify(customFields));
 
     try {
       setLoading2(true);
@@ -105,20 +110,72 @@ export default function ViewDataPage() {
     }
   };
 
+  const fetchCustomFields = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/customfield/`,
+        {
+          headers: {
+            Authorization: `Bearer ${
+              JSON.parse(localStorage.getItem("user")).token
+            }`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        const customFields = response.data;
+        setCustomFields(customFields);
+        if (customFields && customFields.length > 0) {
+          const customColumns = customFields.map((field) => ({
+            field: field.name,
+            headerName: field.label,
+            width: 150,
+          }));
+          setColumns([...defaultColumns, ...customColumns]);
+        }
+      } else {
+        console.error("Failed to fetch custom fields:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching custom fields:", error);
+    }
+  };
+  const flattenRows = (rows) =>
+    rows.map((row) => ({
+      ...row,
+      ...(row.customFields || {}),
+    }));
+
   React.useEffect(() => {
+    fetchCustomFields();
     fetchData();
   }, []);
 
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4 text-center">Add/View Data</h2>
-      <div className="mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded text-yellow-800 text-sm">
-        <strong>Note:</strong> The Excel/CSV file must have columns in this
-        order: <br />
-        <span className="font-mono">
-          name, email, phone, total_spent, visits, last_order_date
-        </span>
+      <div className="mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded text-yellow-800 text-sm flex items-center justify-between">
+        <div>
+          <strong>Note:</strong> The Excel/CSV file must have columns in this
+          order: <br />
+          <span className="font-mono">
+            name, email, phone, total_spent, visits, last_order_date
+            {customFields.length > 0
+              ? `, ${customFields
+                  .map((field) => `custom_${field.name}`)
+                  .join(", ")}`
+              : ""}
+          </span>
+        </div>
+        <button
+          className="ml-4 text-blue-600 underline text-sm hover:text-blue-800"
+          onClick={() => navigate("/custom-fields")}
+          type="button"
+        >
+          Customize Fields
+        </button>
       </div>
+
       <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
         <button
           className="bg-blue-500 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-600 transition"
@@ -178,7 +235,11 @@ export default function ViewDataPage() {
       {loading ? (
         <div className="text-center text-gray-500">Loading...</div>
       ) : (
-        <DataTable columns={columns} rows={rows} enableDelete={true} />
+        <DataTable
+          columns={columns}
+          rows={flattenRows(rows)}
+          enableDelete={true}
+        />
       )}
     </div>
   );

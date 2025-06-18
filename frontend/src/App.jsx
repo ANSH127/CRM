@@ -14,6 +14,7 @@ import CreateCampaignPage from "./pages/CreateCampaignPage";
 import CampaignHistoryPage from "./pages/CampaignHistoryPage";
 import CampaignDetailPage from "./pages/CampaignDetailPage";
 import { ToastContainer } from 'react-toastify';
+import CustomFieldPage from "./pages/CustomFieldPage";
 
 function App() {
 
@@ -29,8 +30,9 @@ function App() {
           <Route path="/create-campaign" element={<CreateCampaignPage />} />
           <Route path="/campaign-history" element={<CampaignHistoryPage />} />
           <Route path="/campaign-detail/:id" element={<CampaignDetailPage />} />
-      
-        </Routes>
+          <Route path="/custom-fields" element={<CustomFieldPage />} />
+          
+         </Routes>
         <ToastContainer/>
       </Router>
     </>

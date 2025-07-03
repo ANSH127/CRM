@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { initializeChat, fetchModelResponse } from "../config/AI";
 import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import { Editor } from "@tinymce/tinymce-react";
 
 const myfields = [
   { name: "total_spent", label: "Total Spent" },
@@ -46,8 +47,7 @@ export default function CreateCampaignPage() {
       return;
     }
     console.log("Fetching audience count with query:", queryData);
-    
-    
+
     try {
       setLoading(true);
       const response = await axios.post(
@@ -93,7 +93,7 @@ export default function CreateCampaignPage() {
       return;
     }
 
-    const prompt=`You're a creative marketing assistant. Given a campaign objective, suggest 1 long, engaging promotional messages that include a personalized {name} placeholder and are suitable for email.
+    const prompt = `You're a creative marketing assistant. Given a campaign objective, suggest 1 long, engaging promotional messages that include a personalized {name} placeholder and are suitable for email.
 
             Make sure:
             - Use emojis sparingly
@@ -105,7 +105,7 @@ export default function CreateCampaignPage() {
 
             User Input:
             ${msg}
-            `
+            `;
 
     try {
       setLoading3(true);
@@ -143,7 +143,11 @@ export default function CreateCampaignPage() {
               - total_spent (number, in INR)
               - visits (number)
               - last_order_date (date in YYYY-MM-DD)
-              - My Custom fields (${customFields.map(field => `custom_${field.name} (string, number, or date)`).join(", ")})
+              - My Custom fields (${customFields
+                .map(
+                  (field) => `custom_${field.name} (string, number, or date)`
+                )
+                .join(", ")})
 
               🔧 Allowed Operators:
               - $gt, $lt, $gte, $lte, $eq
@@ -163,7 +167,7 @@ export default function CreateCampaignPage() {
         // console.log(response);
 
         setAIQuery(JSON.stringify(JSON.parse(response), null, 2));
-        
+
         toast.success("Query generated successfully!");
       } else {
         throw new Error("Failed to generate query");
@@ -176,14 +180,15 @@ export default function CreateCampaignPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if(toggleaiquery && !aiQuery) {
+    if (toggleaiquery && !aiQuery) {
       toast.warning("Please generate a query before submitting.");
       return;
     }
-    let myquery = toggleaiquery ? JSON.parse(aiQuery) : formatQuery(query, "mongodb_query");
+    let myquery = toggleaiquery
+      ? JSON.parse(aiQuery)
+      : formatQuery(query, "mongodb_query");
 
-
-    if(!myquery || Object.keys(myquery).length === 0) {
+    if (!myquery || Object.keys(myquery).length === 0) {
       toast.warning("Please define rules to create a campaign.");
       return;
     }
@@ -261,38 +266,41 @@ export default function CreateCampaignPage() {
   };
 
   const fetchCustomFields = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/customfield/`,
-          {
-            headers: {
-              Authorization: `Bearer ${
-                JSON.parse(localStorage.getItem("user")).token
-              }`,
-            },
-          }
-        );
-        if (response.status === 200) {
-          const customFields = response.data;
-          setFields((prevFields) => [
-            ...prevFields,
-            ...customFields.map((field) => ({
-              name: `custom_${field.name}`,
-              label: field.label,
-            })),
-          ]);
-          setCustomFields(customFields);
-          
-          
-        } else {
-          console.error("Failed to fetch custom fields:", response.statusText);
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/customfield/`,
+        {
+          headers: {
+            Authorization: `Bearer ${
+              JSON.parse(localStorage.getItem("user")).token
+            }`,
+          },
         }
-      } catch (error) {
-        console.error("Error fetching custom fields:", error);
+      );
+      if (response.status === 200) {
+        const customFields = response.data;
+        setFields((prevFields) => [
+          ...prevFields,
+          ...customFields.map((field) => ({
+            name: `custom_${field.name}`,
+            label: field.label,
+          })),
+        ]);
+        setCustomFields(customFields);
+      } else {
+        console.error("Failed to fetch custom fields:", response.statusText);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching custom fields:", error);
+    }
+  };
 
 
+  const handleeditorChange = (content) => {
+    setMessage(content);
+    console.log("Content updated:", content);
+    
+  };
 
   React.useEffect(() => {
     initializeChat([]);
@@ -386,8 +394,7 @@ export default function CreateCampaignPage() {
               <span className="ml-2 text-gray-600">
                 {!toggleaiquery && query.rules.length > 0
                   ? `Matched Audience: ${loading ? "Loading..." : matchcount}`
-                  : toggleaiquery 
-                  && aiQuery
+                  : toggleaiquery && aiQuery
                   ? `Matched Audience: ${loading ? "Loading..." : matchcount}`
                   : "No rules defined yet"}
               </span>
@@ -397,13 +404,29 @@ export default function CreateCampaignPage() {
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Campaign Message
             </label>
-            <textarea
-              placeholder="Enter campaign message"
-              className="shadow appearance-none border rounded w-full py-4 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              style={{ minHeight: "120px" }}
+            <Editor
+              apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            ></textarea>
+              initialValue=" Write your campaign message here..."
+              init={{
+                height: 300,
+                menubar: false,
+                plugins: [
+                  "advlist autolink lists link image charmap print preview anchor",
+                  "searchreplace visualblocks code fullscreen",
+                  "insertdatetime media table paste code help wordcount",
+                ],
+                toolbar:
+                  "undo redo | formatselect | bold italic backcolor | \
+                  alignleft aligncenter alignright alignjustify | \
+                  bullist numlist outdent indent | removeformat | help",
+              }}
+              onEditorChange={handleeditorChange}
+              
+            />
+
+            
+
             <div className="mt-2">
               <Chip
                 label={loading3 ? "Generating..." : "Generate Messages"}

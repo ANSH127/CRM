@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-  import { toast } from 'react-toastify';
-
+import { toast } from 'react-toastify';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -133,8 +133,11 @@ export default function HomePage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 my-10 max-w-4xl mx-auto">
           {loading ? (
             <div className="col-span-4 text-center text-gray-500">
-              Loading metrics...
+              <CircularProgress className="mx-auto" />
+              <p className="mt-4">Loading metrics...</p>
             </div>
+
+
           ) : (
             metrics.map((metric) => (
               <div

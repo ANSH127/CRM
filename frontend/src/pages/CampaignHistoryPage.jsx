@@ -2,6 +2,8 @@ import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 export default function CampaignHistoryPage() {
   const navigate = useNavigate();
@@ -56,8 +58,8 @@ export default function CampaignHistoryPage() {
         </h1>
         {loading ? (
           <div className="flex justify-center items-center h-60">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-opacity-50"></div>
-            <span className="ml-4 text-xl text-gray-500 font-medium">Loading...</span>
+            <CircularProgress className="text-blue-500" />
+            <p className="ml-4 text-gray-500">Loading campaigns...</p>
           </div>
         ) : campaigns.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

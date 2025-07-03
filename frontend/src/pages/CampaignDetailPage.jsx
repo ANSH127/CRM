@@ -5,7 +5,8 @@ import DataTable from "../components/DataTable";
 import { toast } from "react-toastify";
 import Chip from "@mui/material/Chip";
 import { initializeChat, fetchModelResponse } from "../config/AI";
-
+import Box from "@mui/material/Box";
+import LinearProgress from "@mui/material/LinearProgress";
 const columns = [
   { field: "createdAt", headerName: "Created At", width: 180 },
   { field: "_id", headerName: "ID", width: 90 },
@@ -120,8 +121,11 @@ export default function CampaignDetailPage() {
             Records
           </h2>
           {loading ? (
-            <div className="flex justify-center items-center h-40">
-              <span className="text-lg text-gray-500">Loading...</span>
+            <div className="flex flex-col justify-center items-center h-40">
+              <Box sx={{ width: "100%" }}>
+                <LinearProgress />
+              </Box>
+              <p className="ml-4 text-gray-500">Loading records...</p>
             </div>
           ) : (
             <DataTable

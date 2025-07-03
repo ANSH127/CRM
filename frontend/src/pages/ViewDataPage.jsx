@@ -4,6 +4,8 @@ import BasicModal from "../components/Modal";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import Box from "@mui/material/Box";
+import LinearProgress from "@mui/material/LinearProgress";
 
 export default function ViewDataPage() {
   // Define columns for DataGrid
@@ -233,7 +235,10 @@ export default function ViewDataPage() {
         />
       </div>
       {loading ? (
-        <div className="text-center text-gray-500">Loading...</div>
+        <Box sx={{ width: "100%" }}>
+          <LinearProgress />
+          <p className="text-center text-gray-500 mt-2">Loading data...</p>
+        </Box>
       ) : (
         <DataTable
           columns={columns}

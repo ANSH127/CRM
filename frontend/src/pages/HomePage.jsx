@@ -39,7 +39,7 @@ export default function HomePage() {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/user/useranalytics`,
+        `${import.meta.env.VITE_API_URL}/api/useranalytics/`,
         {
           headers: {
             Authorization: `Bearer ${

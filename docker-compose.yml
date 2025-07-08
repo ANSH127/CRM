@@ -14,3 +14,10 @@ services:
       - "3002:3002"
     env_file:
       - ./app-service/.env
+    
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./frontend/.env

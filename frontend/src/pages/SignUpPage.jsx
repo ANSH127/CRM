@@ -16,7 +16,7 @@ export default function SignUpPage() {
     setLoading(true);
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/user/google-login`,
+        `${import.meta.env.VITE_API_AUTHSERVICE_URL}/api/user/google-login`,
         {
           credential: response.credential,
         }
@@ -39,7 +39,7 @@ export default function SignUpPage() {
     setLoading(true);
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/user/signup`,
+        `${import.meta.env.VITE_API_AUTHSERVICE_URL}/api/user/signup`,
         {
           name,
           email,

@@ -13,7 +13,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/user/google-login`,
+        `${import.meta.env.VITE_API_AUTHSERVICE_URL}/api/user/google-login`,
         {
           credential: response.credential,
         }
@@ -36,7 +36,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/user/login`,
+        `${import.meta.env.VITE_API_AUTHSERVICE_URL}/api/user/login`,
         {
           email,
           password,

@@ -10,6 +10,9 @@ const port = process.env.PORT || 3001;
 app.use(cors({ origin: '*'}));
 app.use(express.json());
 app.use('/api/user', UserRoutes);
+app.get('/health', (req, res) => {
+  res.send('OK');
+});
 
 
 

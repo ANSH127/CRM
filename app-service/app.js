@@ -25,6 +25,10 @@ app.use('/api/campaign', CampaignRoutes);
 app.use('/api/vendor', VendorRoutes);
 app.use('/api/customfield', customFieldRoutes);
 app.use('/api/useranalytics', UserAnalyticsRoutes);
+app.get('/health', (req, res) => {
+  res.send('OK');
+});
+
 
 
 // connect to the database
@@ -42,6 +46,7 @@ app.use('/api/useranalytics', UserAnalyticsRoutes);
     }
 }
 )();
+
 
 
 app.listen(port, () => {

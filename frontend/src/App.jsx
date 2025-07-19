@@ -15,6 +15,7 @@ import CampaignHistoryPage from "./pages/CampaignHistoryPage";
 import CampaignDetailPage from "./pages/CampaignDetailPage";
 import { ToastContainer } from 'react-toastify';
 import CustomFieldPage from "./pages/CustomFieldPage";
+import Footer from "./components/Footer";
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
           <Route path="/custom-fields" element={<CustomFieldPage />} />
           
          </Routes>
+        <Footer />
         <ToastContainer/>
       </Router>
     </>

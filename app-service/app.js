@@ -11,6 +11,10 @@ const { connectRedis } = require('./config/redisClient');
 const { processBatch } = require('./workers/batchWorker');
 const { processCustomerStream } = require('./workers/customerStream');
 const customFieldRoutes = require('./routes/customfield');
+const os = require("os");
+app.get("/", (req, res) => {
+  res.send(`Hello from: ${os.hostname()}`);
+});
 
 const port = process.env.PORT || 3002;
 
